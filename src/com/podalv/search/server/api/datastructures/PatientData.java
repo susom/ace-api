@@ -135,7 +135,7 @@ public class PatientData {
    * @param term
    * @return
    */
-  public Iterator<TimeIntervalWithData<TermAdditionalData>> getPositiveTermsTimeIntervals(final String term) {
+  public Iterator<TimeIntervalWithData<TermAdditionalData>> getPositiveTermTimeIntervals(final String term) {
     final LinkedList<TimeIntervalWithData<TermAdditionalData>> result = new LinkedList<TimeIntervalWithData<TermAdditionalData>>();
     final ArrayList<String> list = data.getPositiveTerms().get(term);
     if (list != null) {
@@ -152,7 +152,7 @@ public class PatientData {
   * @param term
   * @return
   */
-  public Iterator<TimeIntervalWithData<TermAdditionalData>> getNegatedTermsTimeIntervals(final String term) {
+  public Iterator<TimeIntervalWithData<TermAdditionalData>> getNegatedTermTimeIntervals(final String term) {
     final LinkedList<TimeIntervalWithData<TermAdditionalData>> result = new LinkedList<TimeIntervalWithData<TermAdditionalData>>();
     final ArrayList<String> list = data.getNegatedTerms().get(term);
     if (list != null) {
@@ -169,7 +169,7 @@ public class PatientData {
   * @param term
   * @return
   */
-  public Iterator<TimeIntervalWithData<TermAdditionalData>> getFamilyHistoryTermsTimeIntervals(final String term) {
+  public Iterator<TimeIntervalWithData<TermAdditionalData>> getFamilyHistoryTermTimeIntervals(final String term) {
     final LinkedList<TimeIntervalWithData<TermAdditionalData>> result = new LinkedList<TimeIntervalWithData<TermAdditionalData>>();
     final ArrayList<String> list = data.getFhTerms().get(term);
     if (list != null) {
