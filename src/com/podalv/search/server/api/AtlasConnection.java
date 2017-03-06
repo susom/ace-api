@@ -10,8 +10,10 @@ import com.google.gson.JsonSyntaxException;
 import com.podalv.search.server.api.datastructures.PatientData;
 import com.podalv.search.server.api.datastructures.PatientId;
 import com.podalv.search.server.api.exceptions.QueryException;
+import com.podalv.search.server.api.requests.DictionaryRequest;
 import com.podalv.search.server.api.requests.DumpRequest;
 import com.podalv.search.server.api.requests.PatientSearchRequest;
+import com.podalv.search.server.api.responses.DictionaryResponse;
 import com.podalv.search.server.api.responses.DumpResponse;
 import com.podalv.search.server.api.responses.PatientSearchResponse;
 import com.podalv.search.server.api.responses.ServerStatusResponse;
@@ -24,9 +26,10 @@ import com.podalv.search.server.api.timeintervals.TimeInterval;
  */
 public class AtlasConnection {
 
-  public static final String STATUS_QUERY = "status";
-  public static final String DUMP_QUERY   = "dump";
-  public static final String SEARCH_QUERY = "query";
+  public static final String STATUS_QUERY     = "status";
+  public static final String DUMP_QUERY       = "dump";
+  public static final String DICTIONARY_QUERY = "dictionary";
+  public static final String SEARCH_QUERY     = "query";
   private final String       url;
 
   public AtlasConnection(final String url) {
@@ -123,6 +126,103 @@ public class AtlasConnection {
    */
   public PatientData getPatient(final int patientId) throws JsonSyntaxException, IOException, QueryException {
     final DumpRequest request = DumpRequest.createFull(patientId);
+    final DumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), -1), DumpResponse.class);
+    return PatientData.create(response);
+  }
+
+  /** Returns names of RxNorm codes
+   *
+   * @param rxNormCodes
+   * @return
+   * @throws IOException
+   * @throws JsonSyntaxException
+   */
+  public HashMap<String, String> getRxNormCodeNames(final String[] rxNormCodes) throws JsonSyntaxException, IOException {
+    final DictionaryRequest request = new DictionaryRequest();
+    request.setRxNorm(rxNormCodes);
+    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), -1), DictionaryResponse.class);
+    return response.getRxNorm();
+  }
+
+  /** Returns names of ICD9 codes
+  *
+  * @param icd9Codes
+  * @return
+  * @throws IOException
+  * @throws JsonSyntaxException
+  */
+  public HashMap<String, String> getIcd9CodeNames(final String[] icd9Codes) throws JsonSyntaxException, IOException {
+    final DictionaryRequest request = new DictionaryRequest();
+    request.setIcd9(icd9Codes);
+    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), -1), DictionaryResponse.class);
+    return response.getIcd9();
+  }
+
+  /** Returns names of CPT codes
+  *
+  * @param cptCodes
+  * @return
+  * @throws IOException
+  * @throws JsonSyntaxException
+  */
+  public HashMap<String, String> getCptCodeNames(final String[] cptCodes) throws JsonSyntaxException, IOException {
+    final DictionaryRequest request = new DictionaryRequest();
+    request.setCpt(cptCodes);
+    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), -1), DictionaryResponse.class);
+    return response.getCpt();
+  }
+
+  /** Returns names of ATC codes
+  *
+  * @param atcCodes
+  * @return
+  * @throws IOException
+  * @throws JsonSyntaxException
+  */
+  public HashMap<String, String> getAtcCodeNames(final String[] atcCodes) throws JsonSyntaxException, IOException {
+    final DictionaryRequest request = new DictionaryRequest();
+    request.setAtc(atcCodes);
+    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), -1), DictionaryResponse.class);
+    return response.getAtc();
+  }
+
+  /** Returns names of labs codes
+  *
+  * @param labsCodes
+  * @return
+  * @throws IOException
+  * @throws JsonSyntaxException
+  */
+  public HashMap<String, String> getLabsCodeNames(final String[] labsCodes) throws JsonSyntaxException, IOException {
+    final DictionaryRequest request = new DictionaryRequest();
+    request.setLabs(labsCodes);
+    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), -1), DictionaryResponse.class);
+    return response.getLabs();
+  }
+
+  /** Returns names of vitals codes
+  *
+  * @param vitalsCodes
+  * @return
+  * @throws IOException
+  * @throws JsonSyntaxException
+  */
+  public HashMap<String, String> getVitalsCodeNames(final String[] vitalsCodes) throws JsonSyntaxException, IOException {
+    final DictionaryRequest request = new DictionaryRequest();
+    request.setLabs(vitalsCodes);
+    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), -1), DictionaryResponse.class);
+    return response.getVitals();
+  }
+
+  /** Returns a patient object containing all the information
+  *
+  * @param patientId
+  * @return
+  * @throws JsonSyntaxException
+  * @throws IOException
+  * @throws QueryException
+  */
+  public PatientData getPatient(final DumpRequest request) throws JsonSyntaxException, IOException, QueryException {
     final DumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), -1), DumpResponse.class);
     return PatientData.create(response);
   }

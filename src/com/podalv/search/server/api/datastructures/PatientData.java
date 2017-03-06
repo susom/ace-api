@@ -1,21 +1,21 @@
 package com.podalv.search.server.api.datastructures;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.Set;
 
-import com.podalv.search.server.api.datastructures.additionaldata.Icd9AdditionalData;
-import com.podalv.search.server.api.datastructures.additionaldata.LabsComputedAdditionalData;
-import com.podalv.search.server.api.datastructures.additionaldata.NumericAdditionalData;
-import com.podalv.search.server.api.datastructures.additionaldata.RxNormAdditionalData;
-import com.podalv.search.server.api.datastructures.additionaldata.TermAdditionalData;
 import com.podalv.search.server.api.exceptions.QueryException;
 import com.podalv.search.server.api.iterators.ImmutableIterator;
 import com.podalv.search.server.api.responses.DumpResponse;
 import com.podalv.search.server.api.timeintervals.TimeInterval;
-import com.podalv.search.server.api.timeintervals.TimeIntervalWithData;
+import com.podalv.search.server.api.timeintervals.TimeIntervalIcd9;
+import com.podalv.search.server.api.timeintervals.TimeIntervalLabs;
+import com.podalv.search.server.api.timeintervals.TimeIntervalNumericValue;
+import com.podalv.search.server.api.timeintervals.TimeIntervalRxNorm;
+import com.podalv.search.server.api.timeintervals.TimeIntervalTerm;
 
 /** Contains all the data about the patient in the database. Can be generated from a DumpResponse
  *
@@ -48,16 +48,236 @@ public class PatientData {
    * @param icd9
    * @return
    */
-  public Iterator<TimeIntervalWithData<Icd9AdditionalData>> getIcd9TimeIntervals(final String icd9) {
-    final LinkedList<TimeIntervalWithData<Icd9AdditionalData>> result = new LinkedList<TimeIntervalWithData<Icd9AdditionalData>>();
+  public ArrayList<TimeIntervalIcd9> getIcd9TimeIntervals(final String icd9) {
+    final ArrayList<TimeIntervalIcd9> result = new ArrayList<TimeIntervalIcd9>();
     final ArrayList<String> list = data.getIcd9().get(icd9);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 3) {
-        result.add(new TimeIntervalWithData<Icd9AdditionalData>(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x + 1))),
-            new Icd9AdditionalData(list.get(x + 2))));
+        result.add(new TimeIntervalIcd9(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x + 1))), list.get(x + 2)));
       }
     }
-    return new ImmutableIterator<TimeIntervalWithData<Icd9AdditionalData>>(result.iterator());
+    Collections.sort(result);
+    return result;
+  }
+
+  private HashSet<TimeInterval> addAll(final TimeInterval ... intervals) {
+    final HashSet<TimeInterval> input = new HashSet<TimeInterval>();
+    for (final TimeInterval t : intervals) {
+      input.add(t);
+    }
+    return input;
+  }
+
+  /** Given a list of time intervals returns all ICD9 codes that are found in these intervals
+   *
+   * @param intervals
+   * @return
+   */
+  public HashMap<String, ArrayList<TimeIntervalIcd9>> getIcd9InIntervals(final TimeInterval ... intervals) {
+    final HashSet<TimeInterval> input = addAll(intervals);
+    final HashMap<String, ArrayList<TimeIntervalIcd9>> result = new HashMap<String, ArrayList<TimeIntervalIcd9>>();
+    final Iterator<String> i = getUniqueIcd9Codes().iterator();
+    while (i.hasNext()) {
+      final String icd9 = i.next();
+      final Iterator<TimeIntervalIcd9> iterator = getIcd9TimeIntervals(icd9).iterator();
+      while (iterator.hasNext()) {
+        final TimeIntervalIcd9 it = iterator.next();
+        if (input.contains(it)) {
+          ArrayList<TimeIntervalIcd9> list = result.get(icd9);
+          if (list == null) {
+            list = new ArrayList<TimeIntervalIcd9>();
+            result.put(icd9, list);
+          }
+          list.add(it);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /** Given a list of time intervals returns all CPT codes that are found in these intervals
+  *
+  * @param intervals
+  * @return
+  */
+  public HashMap<String, ArrayList<TimeInterval>> getCptInIntervals(final TimeInterval ... intervals) {
+    final HashSet<TimeInterval> input = addAll(intervals);
+    final HashMap<String, ArrayList<TimeInterval>> result = new HashMap<String, ArrayList<TimeInterval>>();
+    final Iterator<String> i = getUniqueCptCodes().iterator();
+    while (i.hasNext()) {
+      final String cpt = i.next();
+      final Iterator<TimeInterval> iterator = getCptTimeIntervals(cpt).iterator();
+      while (iterator.hasNext()) {
+        final TimeInterval it = iterator.next();
+        if (input.contains(it)) {
+          ArrayList<TimeInterval> list = result.get(cpt);
+          if (list == null) {
+            list = new ArrayList<TimeInterval>();
+            result.put(cpt, list);
+          }
+          list.add(it);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /** Given a list of time intervals returns all RxNorm codes that are found in these intervals
+  *
+  * @param intervals
+  * @return
+  */
+  public HashMap<String, ArrayList<TimeInterval>> getRxInIntervals(final TimeInterval ... intervals) {
+    final HashSet<TimeInterval> input = addAll(intervals);
+    final HashMap<String, ArrayList<TimeInterval>> result = new HashMap<String, ArrayList<TimeInterval>>();
+    final Iterator<String> i = getUniqueRxNormCodes().iterator();
+    while (i.hasNext()) {
+      final String rx = i.next();
+      final Iterator<TimeIntervalRxNorm> iterator = getRxNormTimeIntervals(rx).iterator();
+      while (iterator.hasNext()) {
+        final TimeInterval it = iterator.next();
+        if (input.contains(it)) {
+          ArrayList<TimeInterval> list = result.get(rx);
+          if (list == null) {
+            list = new ArrayList<TimeInterval>();
+            result.put(rx, list);
+          }
+          list.add(it);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /** Given a list of time intervals returns all Vitals codes that are found in these intervals
+  *
+  * @param intervals
+  * @return
+  */
+  public HashMap<String, ArrayList<TimeInterval>> getVitalsInIntervals(final TimeInterval ... intervals) {
+    final HashSet<TimeInterval> input = addAll(intervals);
+    final HashMap<String, ArrayList<TimeInterval>> result = new HashMap<String, ArrayList<TimeInterval>>();
+    final Iterator<String> i = getUniqueVitalsCodes().iterator();
+    while (i.hasNext()) {
+      final String vitals = i.next();
+      final Iterator<TimeIntervalNumericValue> iterator = getVitalsTimeIntervals(vitals).iterator();
+      while (iterator.hasNext()) {
+        final TimeInterval it = iterator.next();
+        if (input.contains(it)) {
+          ArrayList<TimeInterval> list = result.get(vitals);
+          if (list == null) {
+            list = new ArrayList<TimeInterval>();
+            result.put(vitals, list);
+          }
+          list.add(it);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /** Given a list of time intervals returns all Snomed codes that are found in these intervals
+  *
+  * @param intervals
+  * @return
+  */
+  public HashMap<String, ArrayList<TimeInterval>> getSnomedInIntervals(final TimeInterval ... intervals) {
+    final HashSet<TimeInterval> input = addAll(intervals);
+    final HashMap<String, ArrayList<TimeInterval>> result = new HashMap<String, ArrayList<TimeInterval>>();
+    final Iterator<String> i = getUniqueSnomedCodes().iterator();
+    while (i.hasNext()) {
+      final String snomed = i.next();
+      final Iterator<TimeInterval> iterator = getSnomedTimeIntervals(snomed).iterator();
+      while (iterator.hasNext()) {
+        final TimeInterval it = iterator.next();
+        if (input.contains(it)) {
+          ArrayList<TimeInterval> list = result.get(snomed);
+          if (list == null) {
+            list = new ArrayList<TimeInterval>();
+            result.put(snomed, list);
+          }
+          list.add(it);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /** Given a list of time intervals returns all ATC codes that are found in these intervals
+  *
+  * @param intervals
+  * @return
+  */
+  public HashMap<String, ArrayList<TimeInterval>> getAtcInIntervals(final TimeInterval ... intervals) {
+    final HashSet<TimeInterval> input = addAll(intervals);
+    final HashMap<String, ArrayList<TimeInterval>> result = new HashMap<String, ArrayList<TimeInterval>>();
+    final Iterator<String> i = getUniqueAtcCodes().iterator();
+    while (i.hasNext()) {
+      final String atc = i.next();
+      final Iterator<Integer> rxNorms = getAtcRxNorms(atc).iterator();
+      while (rxNorms.hasNext()) {
+        final Integer rxnorm = rxNorms.next();
+        final Iterator<TimeIntervalRxNorm> iterator = getRxNormTimeIntervals(String.valueOf(rxnorm)).iterator();
+        while (iterator.hasNext()) {
+          final TimeInterval it = iterator.next();
+          if (input.contains(it)) {
+            ArrayList<TimeInterval> list = result.get(atc);
+            if (list == null) {
+              list = new ArrayList<TimeInterval>();
+              result.put(atc, list);
+            }
+            list.add(it);
+          }
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /** Given a list of time intervals returns all Labs codes that are found in these intervals
+  *
+  * @param intervals
+  * @return
+  */
+  public HashMap<String, ArrayList<TimeInterval>> getLabsInIntervals(final TimeInterval ... intervals) {
+    final HashSet<TimeInterval> input = addAll(intervals);
+    final HashMap<String, ArrayList<TimeInterval>> result = new HashMap<String, ArrayList<TimeInterval>>();
+    final Iterator<String> i = getUniqueLabCodes().iterator();
+    while (i.hasNext()) {
+      final String lab = i.next();
+      final Iterator<TimeIntervalLabs> iterator = getLabsComputedTimeIntervals(lab).iterator();
+      while (iterator.hasNext()) {
+        final TimeInterval it = iterator.next();
+        if (input.contains(it)) {
+          ArrayList<TimeInterval> list = result.get(lab);
+          if (list == null) {
+            list = new ArrayList<TimeInterval>();
+            result.put(lab, list);
+          }
+          list.add(it);
+        }
+      }
+      final Iterator<TimeIntervalNumericValue> iterator2 = getLabsNumericTimeIntervals(lab).iterator();
+      while (iterator2.hasNext()) {
+        final TimeInterval it = iterator2.next();
+        if (input.contains(it)) {
+          ArrayList<TimeInterval> list = result.get(lab);
+          if (list == null) {
+            list = new ArrayList<TimeInterval>();
+            result.put(lab, list);
+          }
+          list.add(it);
+        }
+      }
+    }
+
+    return result;
   }
 
   /** Returns time intervals for all labs that had a computed value ("HIGH", "NORMAL", etc.)
@@ -66,16 +286,16 @@ public class PatientData {
    * @param lab
    * @return
    */
-  public Iterator<TimeIntervalWithData<LabsComputedAdditionalData>> getLabsComputedTimeIntervals(final String lab) {
-    final LinkedList<TimeIntervalWithData<LabsComputedAdditionalData>> result = new LinkedList<TimeIntervalWithData<LabsComputedAdditionalData>>();
+  public ArrayList<TimeIntervalLabs> getLabsComputedTimeIntervals(final String lab) {
+    final ArrayList<TimeIntervalLabs> result = new ArrayList<TimeIntervalLabs>();
     final ArrayList<String> list = data.getLabs().get(lab);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
-        result.add(new TimeIntervalWithData<LabsComputedAdditionalData>(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))),
-            new LabsComputedAdditionalData(list.get(x + 1))));
+        result.add(new TimeIntervalLabs(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), list.get(x + 1)));
       }
     }
-    return new ImmutableIterator<TimeIntervalWithData<LabsComputedAdditionalData>>(result.iterator());
+    Collections.sort(result);
+    return result;
   }
 
   /** Returns time intervals for all labs that had a numeric value
@@ -84,16 +304,16 @@ public class PatientData {
    * @param lab
    * @return
    */
-  public Iterator<TimeIntervalWithData<NumericAdditionalData>> getLabsNumericTimeIntervals(final String lab) {
-    final LinkedList<TimeIntervalWithData<NumericAdditionalData>> result = new LinkedList<TimeIntervalWithData<NumericAdditionalData>>();
+  public ArrayList<TimeIntervalNumericValue> getLabsNumericTimeIntervals(final String lab) {
+    final ArrayList<TimeIntervalNumericValue> result = new ArrayList<TimeIntervalNumericValue>();
     final ArrayList<String> list = data.getLabsRaw().get(lab);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
-        result.add(new TimeIntervalWithData<NumericAdditionalData>(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))),
-            new NumericAdditionalData(Double.parseDouble(list.get(x + 1)))));
+        result.add(new TimeIntervalNumericValue(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), Double.parseDouble(list.get(x + 1))));
       }
     }
-    return new ImmutableIterator<TimeIntervalWithData<NumericAdditionalData>>(result.iterator());
+    Collections.sort(result);
+    return result;
   }
 
   /** Returns all time intervals for which a year was indicated
@@ -102,15 +322,16 @@ public class PatientData {
    * @param year
    * @return
    */
-  public Iterator<TimeInterval> getYearTimeIntervals(final int year) {
-    final LinkedList<TimeInterval> result = new LinkedList<TimeInterval>();
+  public ArrayList<TimeInterval> getYearTimeIntervals(final int year) {
+    final ArrayList<TimeInterval> result = new ArrayList<TimeInterval>();
     final ArrayList<Integer> list = data.getYearRanges().get(year);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
         result.add(new TimeInterval(minutesToDays(list.get(x)), minutesToDays(list.get(x))));
       }
     }
-    return new ImmutableIterator<TimeInterval>(result.iterator());
+    Collections.sort(result);
+    return result;
   }
 
   /** For vitals name returns all time intervals and the numeric value of the vitals reading
@@ -118,16 +339,16 @@ public class PatientData {
    * @param vitalsName
    * @return
    */
-  public Iterator<TimeIntervalWithData<NumericAdditionalData>> getVitalsTimeIntervals(final String vitalsName) {
-    final LinkedList<TimeIntervalWithData<NumericAdditionalData>> result = new LinkedList<TimeIntervalWithData<NumericAdditionalData>>();
+  public ArrayList<TimeIntervalNumericValue> getVitalsTimeIntervals(final String vitalsName) {
+    final ArrayList<TimeIntervalNumericValue> result = new ArrayList<TimeIntervalNumericValue>();
     final ArrayList<String> list = data.getVitals().get(vitalsName);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
-        result.add(new TimeIntervalWithData<NumericAdditionalData>(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))),
-            new NumericAdditionalData(Double.parseDouble(list.get(x + 1)))));
+        result.add(new TimeIntervalNumericValue(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), Double.parseDouble(list.get(x + 1))));
       }
     }
-    return new ImmutableIterator<TimeIntervalWithData<NumericAdditionalData>>(result.iterator());
+    Collections.sort(result);
+    return result;
   }
 
   /** For the specified term returns time point, note id and note type where there was a positive mention of the term
@@ -135,16 +356,17 @@ public class PatientData {
    * @param term
    * @return
    */
-  public Iterator<TimeIntervalWithData<TermAdditionalData>> getPositiveTermTimeIntervals(final String term) {
-    final LinkedList<TimeIntervalWithData<TermAdditionalData>> result = new LinkedList<TimeIntervalWithData<TermAdditionalData>>();
+  public ArrayList<TimeIntervalTerm> getPositiveTermTimeIntervals(final String term) {
+    final ArrayList<TimeIntervalTerm> result = new ArrayList<TimeIntervalTerm>();
     final ArrayList<String> list = data.getPositiveTerms().get(term);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 3) {
-        result.add(new TimeIntervalWithData<TermAdditionalData>(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), new TermAdditionalData(
-            Integer.parseInt(list.get(x + 1)), list.get(x + 2))));
+        result.add(new TimeIntervalTerm(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), Integer.parseInt(list.get(x + 1)),
+            list.get(x + 2)));
       }
     }
-    return new ImmutableIterator<TimeIntervalWithData<TermAdditionalData>>(result.iterator());
+    Collections.sort(result);
+    return result;
   }
 
   /** For the specified term returns time point, note id and note type where there was a negated mention of the term
@@ -152,16 +374,17 @@ public class PatientData {
   * @param term
   * @return
   */
-  public Iterator<TimeIntervalWithData<TermAdditionalData>> getNegatedTermTimeIntervals(final String term) {
-    final LinkedList<TimeIntervalWithData<TermAdditionalData>> result = new LinkedList<TimeIntervalWithData<TermAdditionalData>>();
+  public ArrayList<TimeIntervalTerm> getNegatedTermTimeIntervals(final String term) {
+    final ArrayList<TimeIntervalTerm> result = new ArrayList<TimeIntervalTerm>();
     final ArrayList<String> list = data.getNegatedTerms().get(term);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 3) {
-        result.add(new TimeIntervalWithData<TermAdditionalData>(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), new TermAdditionalData(
-            Integer.parseInt(list.get(x + 1)), list.get(x + 2))));
+        result.add(new TimeIntervalTerm(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), Integer.parseInt(list.get(x + 1)),
+            list.get(x + 2)));
       }
     }
-    return new ImmutableIterator<TimeIntervalWithData<TermAdditionalData>>(result.iterator());
+    Collections.sort(result);
+    return result;
   }
 
   /** For the specified term returns time point, note id and note type where there was a family history mention of the term
@@ -169,16 +392,17 @@ public class PatientData {
   * @param term
   * @return
   */
-  public Iterator<TimeIntervalWithData<TermAdditionalData>> getFamilyHistoryTermTimeIntervals(final String term) {
-    final LinkedList<TimeIntervalWithData<TermAdditionalData>> result = new LinkedList<TimeIntervalWithData<TermAdditionalData>>();
+  public ArrayList<TimeIntervalTerm> getFamilyHistoryTermTimeIntervals(final String term) {
+    final ArrayList<TimeIntervalTerm> result = new ArrayList<TimeIntervalTerm>();
     final ArrayList<String> list = data.getFhTerms().get(term);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 3) {
-        result.add(new TimeIntervalWithData<TermAdditionalData>(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), new TermAdditionalData(
-            Integer.parseInt(list.get(x + 1)), list.get(x + 2))));
+        result.add(new TimeIntervalTerm(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), Integer.parseInt(list.get(x + 1)),
+            list.get(x + 2)));
       }
     }
-    return new ImmutableIterator<TimeIntervalWithData<TermAdditionalData>>(result.iterator());
+    Collections.sort(result);
+    return result;
   }
 
   /** For the specified RxNorm returns time interval, drug status and drug route
@@ -186,16 +410,16 @@ public class PatientData {
    * @param rx
    * @return
    */
-  public Iterator<TimeIntervalWithData<RxNormAdditionalData>> getRxNormTimeIntervals(final String rx) {
-    final LinkedList<TimeIntervalWithData<RxNormAdditionalData>> result = new LinkedList<TimeIntervalWithData<RxNormAdditionalData>>();
+  public ArrayList<TimeIntervalRxNorm> getRxNormTimeIntervals(final String rx) {
+    final ArrayList<TimeIntervalRxNorm> result = new ArrayList<TimeIntervalRxNorm>();
     final ArrayList<String> list = data.getRx().get(rx);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 4) {
-        result.add(new TimeIntervalWithData<RxNormAdditionalData>(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x + 1))),
-            new RxNormAdditionalData(list.get(x + 2), list.get(x + 3))));
+        result.add(new TimeIntervalRxNorm(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x + 1))), list.get(x + 2), list.get(x + 3)));
       }
     }
-    return new ImmutableIterator<TimeIntervalWithData<RxNormAdditionalData>>(result.iterator());
+    Collections.sort(result);
+    return result;
   }
 
   /** For CPT code returns all time intervals when the CPT was indicated
@@ -203,15 +427,16 @@ public class PatientData {
    * @param cpt
    * @return
    */
-  public Iterator<TimeInterval> getCptTimeIntervals(final String cpt) {
-    final LinkedList<TimeInterval> result = new LinkedList<TimeInterval>();
+  public ArrayList<TimeInterval> getCptTimeIntervals(final String cpt) {
+    final ArrayList<TimeInterval> result = new ArrayList<TimeInterval>();
     final ArrayList<Integer> list = data.getCpt().get(cpt);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
         result.add(new TimeInterval(minutesToDays(list.get(x)), minutesToDays(list.get(x + 1))));
       }
     }
-    return new ImmutableIterator<TimeInterval>(result.iterator());
+    Collections.sort(result);
+    return result;
   }
 
   /** Returns a list of RxNorms assigned to the specified ATC code
@@ -219,15 +444,15 @@ public class PatientData {
    * @param atc
    * @return
    */
-  public Iterator<Integer> getAtcRxNorms(final String atc) {
-    final LinkedList<Integer> result = new LinkedList<Integer>();
+  public HashSet<Integer> getAtcRxNorms(final String atc) {
+    final HashSet<Integer> result = new HashSet<Integer>();
     final ArrayList<Integer> list = data.getAtc().get(atc);
     if (list != null) {
       for (int x = 0; x < list.size(); x++) {
         result.add(list.get(x));
       }
     }
-    return result.iterator();
+    return result;
   }
 
   /** For the specified snomed code (replacement of ICD9/ICD10 code) returns all time intervals when it was indicated
@@ -237,15 +462,16 @@ public class PatientData {
    * @param snomed
    * @return
    */
-  public Iterator<TimeInterval> getSnomedTimeIntervals(final String snomed) {
-    final LinkedList<TimeInterval> result = new LinkedList<TimeInterval>();
+  public ArrayList<TimeInterval> getSnomedTimeIntervals(final String snomed) {
+    final ArrayList<TimeInterval> result = new ArrayList<TimeInterval>();
     final ArrayList<Integer> list = data.getSnomed().get(snomed);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
         result.add(new TimeInterval(minutesToDays(list.get(x)), minutesToDays(list.get(x + 1))));
       }
     }
-    return new ImmutableIterator<TimeInterval>(result.iterator());
+    Collections.sort(result);
+    return result;
   }
 
   /** Returns time intervals when a visit with the specified type occurred
@@ -253,15 +479,16 @@ public class PatientData {
    * @param visitType
    * @return
    */
-  public Iterator<TimeInterval> getVisitTypeTimeIntervals(final String visitType) {
-    final LinkedList<TimeInterval> result = new LinkedList<TimeInterval>();
+  public ArrayList<TimeInterval> getVisitTypeTimeIntervals(final String visitType) {
+    final ArrayList<TimeInterval> result = new ArrayList<TimeInterval>();
     final ArrayList<Integer> list = data.getVisitTypes().get(visitType);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
         result.add(new TimeInterval(minutesToDays(list.get(x)), minutesToDays(list.get(x + 1))));
       }
     }
-    return new ImmutableIterator<TimeInterval>(result.iterator());
+    Collections.sort(result);
+    return result;
   }
 
   /** Returns time points when patient had notes with the specified type
@@ -269,23 +496,24 @@ public class PatientData {
    * @param noteType
    * @return
    */
-  public Iterator<TimeInterval> getNoteTypeTimeIntervals(final String noteType) {
-    final LinkedList<TimeInterval> result = new LinkedList<TimeInterval>();
+  public ArrayList<TimeInterval> getNoteTypeTimeIntervals(final String noteType) {
+    final ArrayList<TimeInterval> result = new ArrayList<TimeInterval>();
     final ArrayList<Integer> list = data.getNoteTypes().get(noteType);
     if (list != null) {
       for (int x = 0; x < list.size(); x++) {
         result.add(new TimeInterval(minutesToDays(list.get(x)), minutesToDays(list.get(x))));
       }
     }
-    return new ImmutableIterator<TimeInterval>(result.iterator());
+    Collections.sort(result);
+    return result;
   }
 
   private PatientData(final DumpResponse response) {
     this.data = response;
   }
 
-  private Iterator<String> getUniqueCodes(final HashMap<String, ?> map) {
-    return map != null ? new ImmutableIterator<String>(map.keySet().iterator()) : new ImmutableIterator<String>(null);
+  private Set<String> getUniqueCodes(final HashMap<String, ?> map) {
+    return map != null ? map.keySet() : new HashSet<String>();
   }
 
   public int getPatientId() {
@@ -332,21 +560,22 @@ public class PatientData {
     return data.getEthnicity();
   }
 
-  private Iterator<TimeInterval> generateTimeIntervals(final ArrayList<Integer> array) {
-    final LinkedList<TimeInterval> result = new LinkedList<TimeInterval>();
+  private ArrayList<TimeInterval> generateTimeIntervals(final ArrayList<Integer> array) {
+    final ArrayList<TimeInterval> result = new ArrayList<TimeInterval>();
     if (array != null) {
       for (int x = 0; x < array.size(); x += 2) {
         result.add(new TimeInterval(minutesToDays(array.get(x)), minutesToDays(array.get(x + 1))));
       }
     }
-    return result.iterator();
+    Collections.sort(result);
+    return result;
   }
 
   /** Returns time intervals of 24 hour length during which there was at least one datapoint for the patient
    *
    * @return
    */
-  public Iterator<TimeInterval> getEncounterDays() {
+  public ArrayList<TimeInterval> getEncounterDays() {
     return generateTimeIntervals(data.getEncounterDays());
   }
 
@@ -354,7 +583,7 @@ public class PatientData {
    *
    * @return
    */
-  public Iterator<TimeInterval> getAgeRanges() {
+  public ArrayList<TimeInterval> getAgeRanges() {
     return generateTimeIntervals(data.getAgeRanges());
   }
 
@@ -378,7 +607,7 @@ public class PatientData {
    *
    * @return
    */
-  public Iterator<String> getUniqueAtcCodes() {
+  public Set<String> getUniqueAtcCodes() {
     return getUniqueCodes(data.getAtc());
   }
 
@@ -394,7 +623,7 @@ public class PatientData {
    *
    * @return
    */
-  public Iterator<String> getUniqueIcd9Codes() {
+  public Set<String> getUniqueIcd9Codes() {
     return getUniqueCodes(data.getIcd9());
   }
 
@@ -402,7 +631,7 @@ public class PatientData {
    *
    * @return
    */
-  public Iterator<String> getUniqueCptCodes() {
+  public Set<String> getUniqueCptCodes() {
     return getUniqueCodes(data.getCpt());
   }
 
@@ -410,7 +639,7 @@ public class PatientData {
    *
    * @return
    */
-  public Iterator<String> getUniqueRxNormCodes() {
+  public Set<String> getUniqueRxNormCodes() {
     return getUniqueCodes(data.getRx());
   }
 
@@ -418,7 +647,7 @@ public class PatientData {
    *
    * @return
    */
-  public Iterator<String> getUniqueSnomedCodes() {
+  public Set<String> getUniqueSnomedCodes() {
     return getUniqueCodes(data.getSnomed());
   }
 
@@ -426,7 +655,7 @@ public class PatientData {
    *
    * @return
    */
-  public Iterator<String> getUniquePositiveTerms() {
+  public Set<String> getUniquePositiveTerms() {
     return getUniqueCodes(data.getPositiveTerms());
   }
 
@@ -434,7 +663,7 @@ public class PatientData {
    *
    * @return
    */
-  public Iterator<String> getUniqueNegatedTerms() {
+  public Set<String> getUniqueNegatedTerms() {
     return getUniqueCodes(data.getNegatedTerms());
   }
 
@@ -442,7 +671,7 @@ public class PatientData {
    *
    * @return
    */
-  public Iterator<String> getUniqueFamilyHistoryTerms() {
+  public Set<String> getUniqueFamilyHistoryTerms() {
     return getUniqueCodes(data.getFhTerms());
   }
 
@@ -450,7 +679,7 @@ public class PatientData {
    *
    * @return
    */
-  public Iterator<String> getUniqueNoteTypes() {
+  public Set<String> getUniqueNoteTypes() {
     return getUniqueCodes(data.getNoteTypes());
   }
 
@@ -458,11 +687,11 @@ public class PatientData {
    *
    * @return
    */
-  public Iterator<String> getUniqueVisitTypes() {
+  public Set<String> getUniqueVisitTypes() {
     return getUniqueCodes(data.getVisitTypes());
   }
 
-  private Iterator<String> mergeLabs() {
+  private Set<String> mergeLabs() {
     final HashSet<String> result = new HashSet<String>();
     if (data.getLabs() != null) {
       result.addAll(data.getLabs().keySet());
@@ -470,14 +699,14 @@ public class PatientData {
     if (data.getLabsRaw() != null) {
       result.addAll(data.getLabsRaw().keySet());
     }
-    return result.iterator();
+    return result;
   }
 
   /** Returns a list of unique lab codes for which the patient had either a computed value or a numeric value
    *
    * @return
    */
-  public Iterator<String> getUniqueLabCodes() {
+  public Set<String> getUniqueLabCodes() {
     return mergeLabs();
   }
 
@@ -485,7 +714,7 @@ public class PatientData {
    *
    * @return
    */
-  public Iterator<String> getUniqueVitalsCodes() {
+  public Set<String> getUniqueVitalsCodes() {
     return getUniqueCodes(data.getVitals());
   }
 

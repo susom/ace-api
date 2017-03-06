@@ -1,19 +1,14 @@
-package com.podalv.search.server.api.datastructures.additionaldata;
+package com.podalv.search.server.api.timeintervals;
 
-
-/** Primary or not primary diagnosis code for Icd9 codes in visits
- *
- * @author podalv
- *
- */
-public class Icd9AdditionalData implements AdditionalData {
+public class TimeIntervalIcd9 extends TimeInterval {
 
   private final boolean primary;
 
   public static String  ICD9_PRIMARY_STRING = "PRIMARY";
   public static String  ICD9_OHER_STRING    = "OTHER";
 
-  public Icd9AdditionalData(final String data) {
+  public TimeIntervalIcd9(final double start, final double end, final String data) {
+    super(start, end);
     primary = (data != null && data.equals(ICD9_PRIMARY_STRING)) ? true : false;
   }
 
@@ -24,4 +19,5 @@ public class Icd9AdditionalData implements AdditionalData {
   public boolean isPrimary() {
     return primary;
   }
+
 }

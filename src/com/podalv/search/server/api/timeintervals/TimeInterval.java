@@ -6,7 +6,7 @@ package com.podalv.search.server.api.timeintervals;
  * @author podalv
  *
  */
-public class TimeInterval {
+public class TimeInterval implements Comparable<TimeInterval> {
 
   private final double start;
   private final double end;
@@ -24,4 +24,18 @@ public class TimeInterval {
     return end;
   }
 
+  @Override
+  public int compareTo(final TimeInterval o) {
+    return start == o.start ? Double.compare(end, o.end) : Double.compare(start, o.start);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return obj != null && obj instanceof TimeInterval && Double.compare(((TimeInterval) obj).start, start) == 0 && Double.compare(((TimeInterval) obj).end, end) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return Double.hashCode(start);
+  }
 }

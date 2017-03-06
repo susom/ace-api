@@ -6,9 +6,8 @@ import java.util.Iterator;
 import com.google.gson.JsonSyntaxException;
 import com.podalv.search.server.api.AtlasConnection;
 import com.podalv.search.server.api.datastructures.PatientData;
-import com.podalv.search.server.api.datastructures.additionaldata.Icd9AdditionalData;
 import com.podalv.search.server.api.exceptions.QueryException;
-import com.podalv.search.server.api.timeintervals.TimeIntervalWithData;
+import com.podalv.search.server.api.timeintervals.TimeIntervalIcd9;
 
 /** Downloads a patient denoted by the patient Id and gives access to the PatientData object that contains all the
  *  information about the patient
@@ -33,17 +32,17 @@ public class GetPatient {
       final PatientData patient = connection.getPatient(Integer.parseInt(args[1]));
 
       //display available ICD9 codes
-      final Iterator<String> icd9Codes = patient.getUniqueIcd9Codes();
+      final Iterator<String> icd9Codes = patient.getUniqueIcd9Codes().iterator();
       while (icd9Codes.hasNext()) {
         final String icd9Code = icd9Codes.next();
 
         // for each ICD9 code get the list of all its time intervals
-        final Iterator<TimeIntervalWithData<Icd9AdditionalData>> icd9TimeIntervals = patient.getIcd9TimeIntervals(icd9Code);
+        final Iterator<TimeIntervalIcd9> icd9TimeIntervals = patient.getIcd9TimeIntervals(icd9Code).iterator();
         while (icd9TimeIntervals.hasNext()) {
-          final TimeIntervalWithData<Icd9AdditionalData> ti = icd9TimeIntervals.next();
+          final TimeIntervalIcd9 ti = icd9TimeIntervals.next();
 
           //output time intervals and whether the ICD9 was a primary diagnosis
-          System.out.println("ICD9 = " + icd9Code + " START = " + ti.getStart() + " END = " + ti.getEnd() + " PRIMARY = " + ti.getAdditionalData().isPrimary());
+          System.out.println("ICD9 = " + icd9Code + " START = " + ti.getStart() + " END = " + ti.getEnd() + " PRIMARY = " + ti.isPrimary());
         }
       }
     }
