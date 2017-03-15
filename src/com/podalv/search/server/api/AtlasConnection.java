@@ -88,6 +88,29 @@ public class AtlasConnection {
     return map.values().iterator();
   }
 
+  /** Parses query and returns normalized parsed representation of the query
+  *
+  * @param query
+  * @return Iterator<PatientId>
+  * @throws IOException
+  * @throws JsonSyntaxException
+  */
+  public String getParsedQuery(final String query) throws JsonSyntaxException, IOException, QueryException {
+    final PatientSearchRequest request = new PatientSearchRequest();
+    request.setQuery(query);
+    request.setBinary(false);
+    request.setPidCntLimit(Integer.MAX_VALUE);
+    request.setReturnPids(true);
+    request.setReturnSurvivalData(false);
+    request.setReturnTimeIntervals(false);
+    request.setStatisticsLimit(0);
+    final PatientSearchResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + SEARCH_QUERY, new Gson().toJson(request), -1), PatientSearchResponse.class);
+    if (response.containsErrors()) {
+      throw new QueryException(response.getErrorMessage());
+    }
+    return response.getParsedQuery();
+  }
+
   /** Downloads a file that is part of the search response for queries CSV and EVENTFLOW
   *
   * @param query
