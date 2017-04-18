@@ -10,9 +10,11 @@ import com.google.gson.JsonSyntaxException;
 import com.podalv.search.server.api.datastructures.PatientData;
 import com.podalv.search.server.api.datastructures.PatientId;
 import com.podalv.search.server.api.exceptions.QueryException;
+import com.podalv.search.server.api.requests.ContainsPatientRequest;
 import com.podalv.search.server.api.requests.DictionaryRequest;
 import com.podalv.search.server.api.requests.DumpRequest;
 import com.podalv.search.server.api.requests.PatientSearchRequest;
+import com.podalv.search.server.api.responses.BooleanResponse;
 import com.podalv.search.server.api.responses.DictionaryResponse;
 import com.podalv.search.server.api.responses.DumpResponse;
 import com.podalv.search.server.api.responses.PatientSearchResponse;
@@ -26,10 +28,12 @@ import com.podalv.search.server.api.timeintervals.TimeInterval;
  */
 public class AtlasConnection {
 
-  public static final String STATUS_QUERY     = "status";
-  public static final String DUMP_QUERY       = "dump";
-  public static final String DICTIONARY_QUERY = "dictionary";
-  public static final String SEARCH_QUERY     = "query";
+  public static final String STATUS_QUERY           = "status";
+  public static final String PID_QUERY              = "pids";
+  public static final String DUMP_QUERY             = "dump";
+  public static final String DICTIONARY_QUERY       = "dictionary";
+  public static final String SEARCH_QUERY           = "query";
+  public static final String CONTAINS_PATIENT_QUERY = "contains_patient";
   private final String       url;
 
   public AtlasConnection(final String url) {
@@ -86,6 +90,38 @@ public class AtlasConnection {
     }
 
     return map.values().iterator();
+  }
+
+  /** Returns number of patients for the query
+  *
+  * @param query
+  * @return Iterator<PatientId>
+  * @throws IOException
+  * @throws JsonSyntaxException
+  */
+  public int getPatientCnt(final String query) throws JsonSyntaxException, IOException, QueryException {
+    final PatientSearchRequest request = new PatientSearchRequest();
+    request.setQuery(query);
+    request.setBinary(false);
+    request.setPidCntLimit(Integer.MAX_VALUE);
+    request.setReturnPids(true);
+    request.setReturnSurvivalData(false);
+    request.setReturnTimeIntervals(false);
+    request.setStatisticsLimit(0);
+    final String list = QueryUtils.query(url + "/" + PID_QUERY, new Gson().toJson(request), -1);
+    final String[] data = list.split("\n");
+    int cnt = 0;
+    for (int x = 0; x < data.length; x++) {
+      try {
+        Integer.parseInt(data[x]);
+        cnt++;
+      }
+      catch (final Exception e) {
+        //
+      }
+    }
+
+    return cnt;
   }
 
   /** Parses query and returns normalized parsed representation of the query
@@ -250,4 +286,16 @@ public class AtlasConnection {
     return PatientData.create(response);
   }
 
+  /** Returns true if patient with this patient_id exists
+   *
+   * @param patientId
+   * @return
+   * @throws JsonSyntaxException
+   * @throws IOException
+   */
+  public boolean containsPatient(final int patientId) throws JsonSyntaxException, IOException {
+    final BooleanResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + CONTAINS_PATIENT_QUERY, new Gson().toJson(new ContainsPatientRequest(patientId)), -1),
+        BooleanResponse.class);
+    return response.getResponse();
+  }
 }
