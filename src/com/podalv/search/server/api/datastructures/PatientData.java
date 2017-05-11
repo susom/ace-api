@@ -611,6 +611,27 @@ public class PatientData {
     return getUniqueCodes(data.getAtc());
   }
 
+  /** Returns years for the specified start/end time
+   *
+   * @param start
+   * @param end
+   * @return
+   */
+  public HashSet<Integer> getYears(final double start, final double end) {
+    final HashSet<Integer> result = new HashSet<>();
+    final Iterator<Integer> years = getYearsWithData();
+    while (years.hasNext()) {
+      final int year = years.next();
+      final ArrayList<TimeInterval> ti = getYearTimeIntervals(year);
+      for (final TimeInterval t : ti) {
+        if ((start >= t.getStart() && start <= t.getEnd()) || (start <= t.getStart() && end >= t.getStart())) {
+          result.add(year);
+        }
+      }
+    }
+    return result;
+  }
+
   /** Returns a list of years for which there is at least 1 data point
    *
    * @return
