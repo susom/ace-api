@@ -29,7 +29,7 @@ public class GetPatient {
     }
     else {
       // fetch the patient from the database
-      final PatientData patient = connection.getPatient(Integer.parseInt(args[1]));
+      final PatientData patient = connection.getPatient(Integer.parseInt(args[1]), "YEAR(2015, 2015)", true, false);
 
       //display available ICD9 codes
       final Iterator<String> icd9Codes = patient.getUniqueIcd9Codes().iterator();

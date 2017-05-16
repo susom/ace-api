@@ -1,5 +1,8 @@
 package com.podalv.search.server.api.datastructures;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,6 +10,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import com.podalv.search.server.api.exceptions.QueryException;
 import com.podalv.search.server.api.iterators.ImmutableIterator;
 import com.podalv.search.server.api.responses.DumpResponse;
@@ -28,6 +34,23 @@ public class PatientData {
 
   public static final double minutesToDays(final int age) {
     return (age == Integer.MAX_VALUE) ? Integer.MAX_VALUE : (age < 0) ? 0 : age / (double) (24 * 60);
+  }
+
+  /** From a dump file response creates PatientData object
+  *
+  * @param response
+  * @return
+  * @throws QueryException if the patient did not exist or the response did not return any data
+   * @throws FileNotFoundException
+   * @throws JsonIOException
+   * @throws JsonSyntaxException
+  */
+  public static PatientData create(final File jsonDumpResponse) throws QueryException, JsonSyntaxException, JsonIOException, FileNotFoundException {
+    final DumpResponse response = new Gson().fromJson(new FileReader(jsonDumpResponse), DumpResponse.class);
+    if (response == null || response.getError() != null) {
+      throw new QueryException(response == null ? "Patient dump request did not return any data" : "Patient dump request returned error '" + response.getError() + "'");
+    }
+    return new PatientData(response);
   }
 
   /** From a dump response creates PatientData object

@@ -17,23 +17,26 @@ public class DumpResponse {
   private String                               gender;
   private String                               race;
   private String                               ethnicity;
-  private HashMap<String, ArrayList<String>>   icd9          = null;
-  private HashMap<String, ArrayList<Integer>>  cpt           = null;
-  private HashMap<String, ArrayList<String>>   rx            = null;
-  private HashMap<String, ArrayList<Integer>>  snomed        = null;
-  private HashMap<String, ArrayList<String>>   negatedTerms  = null;
-  private HashMap<String, ArrayList<String>>   fhTerms       = null;
-  private HashMap<String, ArrayList<String>>   positiveTerms = null;
-  private HashMap<String, ArrayList<Integer>>  visitTypes    = null;
-  private HashMap<String, ArrayList<Integer>>  noteTypes     = null;
-  private HashMap<String, ArrayList<Integer>>  atc           = null;
-  private HashMap<String, ArrayList<String>>   labs          = null;
-  private HashMap<String, ArrayList<String>>   labsRaw       = null;
-  private HashMap<String, ArrayList<String>>   vitals        = null;
-  private ArrayList<Integer>                   encounterDays = null;
-  private ArrayList<Integer>                   ageRanges     = null;
-  private HashMap<Integer, ArrayList<Integer>> yearRanges    = null;
-  private String                               error         = null;
+  private HashMap<String, ArrayList<String>>   icd9           = null;
+  private HashMap<String, ArrayList<Integer>>  cpt            = null;
+  private HashMap<String, ArrayList<String>>   rx             = null;
+  private HashMap<String, ArrayList<Integer>>  snomed         = null;
+  private HashMap<String, ArrayList<String>>   negatedTerms   = null;
+  private HashMap<String, ArrayList<String>>   fhTerms        = null;
+  private HashMap<String, ArrayList<String>>   positiveTerms  = null;
+  private HashMap<String, ArrayList<Integer>>  visitTypes     = null;
+  private HashMap<String, ArrayList<Integer>>  noteTypes      = null;
+  private HashMap<String, ArrayList<Integer>>  atc            = null;
+  private HashMap<String, ArrayList<String>>   labs           = null;
+  private HashMap<String, ArrayList<String>>   labsRaw        = null;
+  private HashMap<String, ArrayList<String>>   vitals         = null;
+  private ArrayList<Integer>                   encounterDays  = null;
+  private ArrayList<Integer>                   ageRanges      = null;
+  private HashMap<Integer, ArrayList<Integer>> yearRanges     = null;
+  private String                               error          = null;
+  private String                               selectionQuery = null;
+  private boolean                              containsStart;
+  private boolean                              containsEnd;
 
   public static DumpResponse createError(final String error) {
     final DumpResponse result = new DumpResponse(-1);
@@ -43,6 +46,30 @@ public class DumpResponse {
 
   public DumpResponse(final int patientId) {
     this.patientId = patientId;
+  }
+
+  public void setContainsEnd(final boolean containsEnd) {
+    this.containsEnd = containsEnd;
+  }
+
+  public void setContainsStart(final boolean containsStart) {
+    this.containsStart = containsStart;
+  }
+
+  public void setSelectionQuery(final String selectionQuery) {
+    this.selectionQuery = selectionQuery;
+  }
+
+  public String getSelectionQuery() {
+    return selectionQuery;
+  }
+
+  public boolean isContainsEnd() {
+    return containsEnd;
+  }
+
+  public boolean isContainsStart() {
+    return containsStart;
   }
 
   public void setLabsRaw(final HashMap<String, ArrayList<String>> labs) {

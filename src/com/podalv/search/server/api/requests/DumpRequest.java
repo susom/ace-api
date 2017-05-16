@@ -22,6 +22,10 @@ public class DumpRequest {
   private boolean   labs;
   private boolean   vitals;
   private boolean   atc;
+  private int[]     yearRanges;
+  private String    selectionQuery;
+  private boolean   containsStart;
+  private boolean   containsEnd;
 
   public static DumpRequest createFull(final int patientId) {
     final DumpRequest req = new DumpRequest(patientId);
@@ -37,7 +41,24 @@ public class DumpRequest {
     req.setVisitTypes(true);
     req.setVitals(true);
     req.setNoteTypes(true);
+    req.setYearRanges(new int[] {0, 2100});
     return req;
+  }
+
+  public void setContainsEnd(final boolean containsEnd) {
+    this.containsEnd = containsEnd;
+  }
+
+  public void setContainsStart(final boolean containsStart) {
+    this.containsStart = containsStart;
+  }
+
+  public void setSelectionQuery(final String selectionQuery) {
+    this.selectionQuery = selectionQuery;
+  }
+
+  public void setYearRanges(final int[] yearRanges) {
+    this.yearRanges = yearRanges;
   }
 
   public DumpRequest(final int patientId) {
@@ -132,6 +153,18 @@ public class DumpRequest {
     return labs;
   }
 
+  public boolean isContainsEnd() {
+    return containsEnd;
+  }
+
+  public boolean isContainsStart() {
+    return containsStart;
+  }
+
+  public String getSelectionQuery() {
+    return selectionQuery;
+  }
+
   public boolean isVitals() {
     return vitals;
   }
@@ -140,12 +173,16 @@ public class DumpRequest {
     return noteTypes;
   }
 
+  public int[] getYearRanges() {
+    return yearRanges;
+  }
+
   public boolean isAtc() {
     return atc;
   }
 
   public static void main(final String[] args) {
-    final DumpRequest req = new DumpRequest(1);
+    final DumpRequest req = DumpRequest.createFull(1);
     req.setAgeRanges(true);
     req.setAtc(true);
     req.setIcd9(true);

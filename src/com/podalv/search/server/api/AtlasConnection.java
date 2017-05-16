@@ -72,7 +72,7 @@ public class AtlasConnection {
       throw new QueryException(response.getErrorMessage());
     }
     final Iterator<double[]> iterator = response.getPatientIds().iterator();
-    final HashMap<Integer, PatientId> map = new HashMap<Integer, PatientId>();
+    final HashMap<Integer, PatientId> map = new HashMap<>();
     while (iterator.hasNext()) {
       final double[] value = iterator.next();
       if (value.length != 1 && value.length != 3) {
@@ -185,6 +185,27 @@ public class AtlasConnection {
    */
   public PatientData getPatient(final int patientId) throws JsonSyntaxException, IOException, QueryException {
     final DumpRequest request = DumpRequest.createFull(patientId);
+    final DumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), -1), DumpResponse.class);
+    return PatientData.create(response);
+  }
+
+  /** Returns a patient object containing all the information
+  *
+  * @param patientId
+  * @param selectionQuery query to select a portion of patient's timeline to output (example: YEAR(2012, 2015))
+  * @param containsStart time intervals of the selectionQuery must contain the START of each event in order for it to be dumped
+  * @param containsEnd time intervals of the selectionQuery must contain the END of each event in order for it to be dumped
+  * @return
+  * @throws JsonSyntaxException
+  * @throws IOException
+  * @throws QueryException
+  */
+  public PatientData getPatient(final int patientId, final String selectionQuery, final boolean containsStart, final boolean containsEnd) throws JsonSyntaxException, IOException,
+      QueryException {
+    final DumpRequest request = DumpRequest.createFull(patientId);
+    request.setSelectionQuery(selectionQuery);
+    request.setContainsStart(containsStart);
+    request.setContainsEnd(containsEnd);
     final DumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), -1), DumpResponse.class);
     return PatientData.create(response);
   }
