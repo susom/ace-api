@@ -13,5 +13,6 @@ public class Test {
     System.out.println(connection.test());
     connection.getFile("ICD9=250.50", new File("/home/podalv/test.txt"));
     connection.getFile("ICD9=250", new File("/home/podalv/test2.txt"));
+    connection.getFile("ICD9=249", new File("/home/podalv/test3.txt"));
   }
 }
