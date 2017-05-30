@@ -12,5 +12,6 @@ public class Test {
     final AtlasConnection connection = new AtlasConnection("http://localhost:8080");
     System.out.println(connection.test());
     connection.getFile("ICD9=250.50", new File("/home/podalv/test.txt"));
+    connection.getFile("ICD9=250", new File("/home/podalv/test2.txt"));
   }
 }
