@@ -12,7 +12,7 @@ import com.podalv.search.server.api.timeintervals.TimeInterval;
 public class PatientId {
 
   private final int                      patientId;
-  private final LinkedList<TimeInterval> startEndIntervals = new LinkedList<TimeInterval>();
+  private final LinkedList<TimeInterval> startEndIntervals = new LinkedList<>();
 
   public PatientId(final int patientId) {
     this.patientId = patientId;
