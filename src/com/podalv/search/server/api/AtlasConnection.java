@@ -1,5 +1,6 @@
 package com.podalv.search.server.api;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -187,6 +188,32 @@ public class AtlasConnection {
     final DumpRequest request = DumpRequest.createFull(patientId);
     final DumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), -1), DumpResponse.class);
     return PatientData.create(response);
+  }
+
+  /** Returns a patient object containing all the information
+  *
+  * @param patientId
+  * @return
+  * @throws JsonSyntaxException
+  * @throws IOException
+  * @throws QueryException
+  */
+  public DumpResponse getPatientDumpResponse(final int patientId) throws JsonSyntaxException, IOException, QueryException {
+    final DumpRequest request = DumpRequest.createFull(patientId);
+    return new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), -1), DumpResponse.class);
+  }
+
+  /** Stores DumpResponse to a Stream
+  *
+  * @param patientId
+  * @return
+  * @throws JsonSyntaxException
+  * @throws IOException
+  * @throws QueryException
+  */
+  public void getPatient(final int patientId, final BufferedWriter stream) throws JsonSyntaxException, IOException, QueryException {
+    final DumpRequest request = DumpRequest.createFull(patientId);
+    stream.write(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), -1));
   }
 
   /** Returns a patient object containing all the information
