@@ -6,16 +6,17 @@ import com.google.gson.Gson;
 
 public class PatientSearchRequest {
 
-  String          query;
-  private boolean returnPids          = true;
-  private boolean returnTimeIntervals = false;
-  private boolean returnSurvivalData  = false;
-  private int     pidCntLimit         = Integer.MAX_VALUE;
-  private int     statisticsLimit     = Integer.MAX_VALUE;
-  private int[]   encounterBuckets;
-  private int[]   durationBuckets;
-  private boolean binary              = false;
-  private int[]   searchablePids;
+  String                query;
+  private boolean       returnPids          = true;
+  private boolean       returnTimeIntervals = false;
+  private boolean       returnSurvivalData  = false;
+  private int           pidCntLimit         = Integer.MAX_VALUE;
+  private final boolean checkStatus         = false;
+  private int           statisticsLimit     = Integer.MAX_VALUE;
+  private int[]         encounterBuckets;
+  private int[]         durationBuckets;
+  private boolean       binary              = false;
+  private int[]         searchablePids;
 
   public static PatientSearchRequest create(final String query) {
     final PatientSearchRequest result = new PatientSearchRequest();
@@ -37,6 +38,10 @@ public class PatientSearchRequest {
 
   public int[] getEncounterBuckets() {
     return encounterBuckets;
+  }
+
+  public boolean isCheckStatusQuery() {
+    return checkStatus;
   }
 
   public void setBinary(final boolean binary) {
