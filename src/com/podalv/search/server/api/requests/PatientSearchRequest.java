@@ -11,6 +11,7 @@ public class PatientSearchRequest {
   private boolean       returnTimeIntervals = false;
   private boolean       returnSurvivalData  = false;
   private int           pidCntLimit         = Integer.MAX_VALUE;
+  //only check the status of a query on server, but do not initiate a new query if query does not exist
   private final boolean checkStatus         = false;
   private int           statisticsLimit     = Integer.MAX_VALUE;
   private int[]         encounterBuckets;
