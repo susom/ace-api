@@ -4,23 +4,24 @@ public class ServerStatusResponse {
 
   private static String OK_RESPONSE = "OK";
   private String        status;
+  private String        datasetVersion;
+  private String        version;
   private boolean       workshop;
-
-  public static ServerStatusResponse createOkResponse(final boolean workshop) {
-    return new ServerStatusResponse(OK_RESPONSE, workshop);
-  }
-
-  public ServerStatusResponse(final String status, final boolean workshop) {
-    this.status = status;
-    this.workshop = workshop;
-  }
 
   public String getStatus() {
     return status;
   }
 
+  public String getVersion() {
+    return version;
+  }
+
   public boolean getWorkshop() {
     return workshop;
+  }
+
+  public String getDatasetVersion() {
+    return datasetVersion;
   }
 
   public void setWorkshop(final boolean workshop) {
