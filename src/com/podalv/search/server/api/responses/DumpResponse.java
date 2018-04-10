@@ -2,6 +2,7 @@ package com.podalv.search.server.api.responses;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 
 /** Complete patient's record
  *
@@ -73,7 +74,7 @@ public class DumpResponse {
   }
 
   public void setLabsRaw(final HashMap<String, ArrayList<String>> labs) {
-    this.labsRaw = labs;
+    labsRaw = labs;
   }
 
   public HashMap<String, ArrayList<String>> getLabsRaw() {
@@ -258,6 +259,46 @@ public class DumpResponse {
 
   public String getError() {
     return error;
+  }
+
+  @Override
+  public int hashCode() {
+    return patientId;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (obj instanceof DumpResponse) {
+      final DumpResponse resp = (DumpResponse) obj;
+      return resp.patientId == patientId && //
+          resp.recordStart == recordStart && //
+          resp.containsEnd == containsEnd && //
+          resp.death == death && //
+          resp.containsEnd == containsStart && //
+          resp.containsEnd == containsEnd && //
+          Objects.equals(resp.gender, gender) && //
+          Objects.equals(resp.race, race) && //
+          Objects.equals(resp.ethnicity, ethnicity) && //
+          Objects.equals(resp.selectionQuery, selectionQuery) && //
+          Objects.equals(resp.error, error) && //
+          Objects.equals(resp.icd9, icd9) && //
+          Objects.equals(resp.cpt, cpt) && //
+          Objects.equals(resp.rx, rx) && //
+          Objects.equals(resp.snomed, snomed) && //
+          Objects.equals(resp.negatedTerms, negatedTerms) && //
+          Objects.equals(resp.fhTerms, fhTerms) && //
+          Objects.equals(resp.positiveTerms, positiveTerms) && //
+          Objects.equals(resp.visitTypes, visitTypes) && //      
+          Objects.equals(resp.noteTypes, noteTypes) && //
+          Objects.equals(resp.atc, atc) && //
+          Objects.equals(resp.labs, labs) && //
+          Objects.equals(resp.labsRaw, labsRaw) && //
+          Objects.equals(resp.vitals, vitals) && //
+          Objects.equals(resp.encounterDays, encounterDays) && //
+          Objects.equals(resp.ageRanges, ageRanges) && //
+          Objects.equals(resp.yearRanges, yearRanges);
+    }
+    return false;
   }
 
 }

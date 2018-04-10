@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.function.Predicate;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -15,11 +17,7 @@ import com.podalv.search.server.api.requests.ContainsPatientRequest;
 import com.podalv.search.server.api.requests.DictionaryRequest;
 import com.podalv.search.server.api.requests.DumpRequest;
 import com.podalv.search.server.api.requests.PatientSearchRequest;
-import com.podalv.search.server.api.responses.BooleanResponse;
-import com.podalv.search.server.api.responses.DictionaryResponse;
-import com.podalv.search.server.api.responses.DumpResponse;
-import com.podalv.search.server.api.responses.PatientSearchResponse;
-import com.podalv.search.server.api.responses.ServerStatusResponse;
+import com.podalv.search.server.api.responses.*;
 import com.podalv.search.server.api.timeintervals.TimeInterval;
 
 /** Stores connection details to ATLAS server
@@ -32,6 +30,7 @@ public class AtlasConnection {
   public static final String STATUS_QUERY           = "status";
   public static final String PID_QUERY              = "pids";
   public static final String DUMP_QUERY             = "dump";
+  public static final String PATIENT_LIST           = "patient_list";
   public static final String DICTIONARY_QUERY       = "dictionary";
   public static final String SEARCH_QUERY           = "query";
   public static final String CONTAINS_PATIENT_QUERY = "contains_patient";
@@ -47,7 +46,7 @@ public class AtlasConnection {
    * @throws IOException if connection is not successful
    */
   public boolean test() throws IOException {
-    final String result = QueryUtils.query(url + "/" + STATUS_QUERY, "", -1);
+    final String result = QueryUtils.query(url + "/" + STATUS_QUERY, "", 0);
     final ServerStatusResponse response = new Gson().fromJson(result, ServerStatusResponse.class);
     return response.isOk();
   }
@@ -68,7 +67,7 @@ public class AtlasConnection {
     request.setReturnSurvivalData(false);
     request.setReturnTimeIntervals(false);
     request.setStatisticsLimit(0);
-    final PatientSearchResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + SEARCH_QUERY, new Gson().toJson(request), -1), PatientSearchResponse.class);
+    final PatientSearchResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + SEARCH_QUERY, new Gson().toJson(request), 0), PatientSearchResponse.class);
     if (response.containsErrors()) {
       throw new QueryException(response.getErrorMessage());
     }
@@ -109,7 +108,7 @@ public class AtlasConnection {
     request.setReturnSurvivalData(false);
     request.setReturnTimeIntervals(false);
     request.setStatisticsLimit(0);
-    final String list = QueryUtils.query(url + "/" + PID_QUERY, new Gson().toJson(request), -1);
+    final String list = QueryUtils.query(url + "/" + PID_QUERY, new Gson().toJson(request), 0);
     final String[] data = list.split("\n");
     int cnt = 0;
     for (int x = 0; x < data.length; x++) {
@@ -141,7 +140,7 @@ public class AtlasConnection {
     request.setReturnSurvivalData(false);
     request.setReturnTimeIntervals(false);
     request.setStatisticsLimit(0);
-    final PatientSearchResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + SEARCH_QUERY, new Gson().toJson(request), -1), PatientSearchResponse.class);
+    final PatientSearchResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + SEARCH_QUERY, new Gson().toJson(request), 0), PatientSearchResponse.class);
     if (response.containsErrors()) {
       throw new QueryException(response.getErrorMessage());
     }
@@ -165,7 +164,7 @@ public class AtlasConnection {
     request.setReturnSurvivalData(false);
     request.setReturnTimeIntervals(false);
     request.setStatisticsLimit(0);
-    final PatientSearchResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + SEARCH_QUERY, new Gson().toJson(request), -1), PatientSearchResponse.class);
+    final PatientSearchResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + SEARCH_QUERY, new Gson().toJson(request), 0), PatientSearchResponse.class);
     if (response.containsErrors()) {
       throw new QueryException(response.getErrorMessage());
     }
@@ -186,7 +185,7 @@ public class AtlasConnection {
    */
   public PatientData getPatient(final int patientId) throws JsonSyntaxException, IOException, QueryException {
     final DumpRequest request = DumpRequest.createFull(patientId);
-    final DumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), -1), DumpResponse.class);
+    final DumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), 0), DumpResponse.class);
     return PatientData.create(response);
   }
 
@@ -200,7 +199,7 @@ public class AtlasConnection {
   */
   public DumpResponse getPatientDumpResponse(final int patientId) throws JsonSyntaxException, IOException, QueryException {
     final DumpRequest request = DumpRequest.createFull(patientId);
-    return new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), -1), DumpResponse.class);
+    return new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), 0), DumpResponse.class);
   }
 
   /** Stores DumpResponse to a Stream
@@ -213,7 +212,7 @@ public class AtlasConnection {
   */
   public void getPatient(final int patientId, final BufferedWriter stream) throws JsonSyntaxException, IOException, QueryException {
     final DumpRequest request = DumpRequest.createFull(patientId);
-    stream.write(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), -1));
+    stream.write(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), 0));
   }
 
   /** Returns a patient object containing all the information
@@ -233,7 +232,7 @@ public class AtlasConnection {
     request.setSelectionQuery(selectionQuery);
     request.setContainsStart(containsStart);
     request.setContainsEnd(containsEnd);
-    final DumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), -1), DumpResponse.class);
+    final DumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), 0), DumpResponse.class);
     return PatientData.create(response);
   }
 
@@ -247,7 +246,7 @@ public class AtlasConnection {
   public HashMap<String, String> getRxNormCodeNames(final String[] rxNormCodes) throws JsonSyntaxException, IOException {
     final DictionaryRequest request = new DictionaryRequest();
     request.setRxNorm(rxNormCodes);
-    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), -1), DictionaryResponse.class);
+    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), 0), DictionaryResponse.class);
     return response.getRxNorm();
   }
 
@@ -261,7 +260,7 @@ public class AtlasConnection {
   public HashMap<String, String> getIcd9CodeNames(final String[] icd9Codes) throws JsonSyntaxException, IOException {
     final DictionaryRequest request = new DictionaryRequest();
     request.setIcd9(icd9Codes);
-    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), -1), DictionaryResponse.class);
+    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), 0), DictionaryResponse.class);
     return response.getIcd9();
   }
 
@@ -275,7 +274,7 @@ public class AtlasConnection {
   public HashMap<String, String> getCptCodeNames(final String[] cptCodes) throws JsonSyntaxException, IOException {
     final DictionaryRequest request = new DictionaryRequest();
     request.setCpt(cptCodes);
-    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), -1), DictionaryResponse.class);
+    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), 0), DictionaryResponse.class);
     return response.getCpt();
   }
 
@@ -289,7 +288,7 @@ public class AtlasConnection {
   public HashMap<String, String> getAtcCodeNames(final String[] atcCodes) throws JsonSyntaxException, IOException {
     final DictionaryRequest request = new DictionaryRequest();
     request.setAtc(atcCodes);
-    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), -1), DictionaryResponse.class);
+    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), 0), DictionaryResponse.class);
     return response.getAtc();
   }
 
@@ -303,7 +302,7 @@ public class AtlasConnection {
   public HashMap<String, String> getLabsCodeNames(final String[] labsCodes) throws JsonSyntaxException, IOException {
     final DictionaryRequest request = new DictionaryRequest();
     request.setLabs(labsCodes);
-    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), -1), DictionaryResponse.class);
+    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), 0), DictionaryResponse.class);
     return response.getLabs();
   }
 
@@ -317,21 +316,39 @@ public class AtlasConnection {
   public HashMap<String, String> getVitalsCodeNames(final String[] vitalsCodes) throws JsonSyntaxException, IOException {
     final DictionaryRequest request = new DictionaryRequest();
     request.setLabs(vitalsCodes);
-    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), -1), DictionaryResponse.class);
+    final DictionaryResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DICTIONARY_QUERY, new Gson().toJson(request), 0), DictionaryResponse.class);
     return response.getVitals();
   }
 
   /** Returns a patient object containing all the information
   *
-  * @param patientId
   * @return
   * @throws JsonSyntaxException
   * @throws IOException
   * @throws QueryException
   */
   public PatientData getPatient(final DumpRequest request) throws JsonSyntaxException, IOException, QueryException {
-    final DumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), -1), DumpResponse.class);
+    final DumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), 0), DumpResponse.class);
     return PatientData.create(response);
+  }
+
+  /** 
+   * 
+   * @return list of all patients in the dataset
+   */
+  public LinkedList<Integer> getPatientIds(final int maxPatientCnt) throws IOException {
+    final LinkedList<Integer> result = new LinkedList<>();
+
+    QueryUtils.query(url + "/" + PATIENT_LIST, "", 0, new Predicate<String>() {
+
+      @Override
+      public boolean test(final String s) {
+        result.add(Integer.parseInt(s));
+        return result.size() < maxPatientCnt;
+      }
+
+    });
+    return result;
   }
 
   /** Returns true if patient with this patient_id exists
@@ -342,8 +359,13 @@ public class AtlasConnection {
    * @throws IOException
    */
   public boolean containsPatient(final int patientId) throws JsonSyntaxException, IOException {
-    final BooleanResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + CONTAINS_PATIENT_QUERY, new Gson().toJson(new ContainsPatientRequest(patientId)), -1),
+    final BooleanResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + CONTAINS_PATIENT_QUERY, new Gson().toJson(new ContainsPatientRequest(patientId)), 0),
         BooleanResponse.class);
     return response.getResponse();
+  }
+
+  @Override
+  public String toString() {
+    return url;
   }
 }

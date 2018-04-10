@@ -1,24 +1,22 @@
 package com.podalv.search.server.api;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.function.Predicate;
 
 public class QueryUtils {
 
-  public static String query(final String slaveUrl, final String query, final int queryId, final int timeout) throws IOException {
-    final StringBuilder result = new StringBuilder();
-    if (slaveUrl == null) {
-      return null;
-    }
-    else {
+  public static String query(final String slaveUrl, final String query, final int timeout) throws IOException {
+    return query(slaveUrl, query, timeout, null);
+  }
+
+  public static String query(final String slaveUrl, final String query, final int timeout, final Predicate<String> consumer) throws IOException {
+    String result = null;
+    if (slaveUrl != null) {
+      final StringBuilder resultBuilder = new StringBuilder();
       final URL url = new URL(slaveUrl);
       final HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
       urlc.setConnectTimeout(timeout);
@@ -32,17 +30,21 @@ public class QueryUtils {
       ps.close();
 
       final BufferedReader br = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
-      String l = null;
-      while ((l = br.readLine()) != null) {
-        result.append(l + "\n");
+      String line;
+      while ((line = br.readLine()) != null) {
+        if (consumer == null) {
+          resultBuilder.append(line + "\n");
+        }
+        else {
+          if (!consumer.test(line)) {
+            break;
+          }
+        }
       }
       br.close();
+      result = resultBuilder.toString();
     }
-    return result.toString();
-  }
-
-  public static String query(final String slaveUrl, final String query, final int queryId) throws IOException {
-    return query(slaveUrl, query, queryId, 0);
+    return result;
   }
 
   public static void saveUrlToFile(final String url, final File outputFile) throws IOException {
