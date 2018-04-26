@@ -1,7 +1,9 @@
 '''
 Created on Mar 2, 2017
+Updated on April 26, 2018
 
 @author: podalv
+@author: davekale
 '''
 
 import requests
@@ -37,7 +39,7 @@ class Atlas():
                     return result
             
     def getPatient(self, patientId):
-        request = {'patientId': patientId, 'icd9': True, 'cpt': True, 'rx': True, 'snomed': True, 'notes': True, 'visitTypes':True, 'noteTypes': True, 'encounterDays': True, 'ageRanges': True, 'labs': True, 'vitals': True, 'atc': True}
+        request = {'patientId': patientId, 'icd9': True, 'icd10': True, 'cpt': True, 'rx': True, 'snomed': True, 'notes': True, 'visitTypes':True, 'noteTypes': True, 'encounterDays': True, 'ageRanges': True, 'labs': True, 'vitals': True, 'atc': True}
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
         response = json.loads(requests.post(self.url + "/" + "dump", data=json.dumps(request), headers=headers).text)
         return PatientData(response)
@@ -47,7 +49,10 @@ class PatientData():
     
     def __init__(self, response):
         self.patientId = response['patientId']
-        self.__parseIcd9(response)
+        self.__parsePatientAttributes(response)
+        self.__parseAgeRanges(response)
+        self.__parseIcd(response, version='icd9')
+        self.__parseIcd(response, version='icd10')
         self.__parseCpt(response)
         self.__parseRx(response)
         self.__parseVisitTypes(response)
@@ -62,7 +67,24 @@ class PatientData():
         self.__parseYears(response)
 
     def __minutesToDays(self, minutes):
-        return minutes / (24 * 60);
+        return minutes / (24 * 60.);
+
+    def __minutesToYears(self, minutes):
+        return minutes / (24 * 60 * 365.);
+
+    def __parsePatientAttributes(self, response):
+        self.death = response['death'] if 'death' in response else -1
+        self.gender = response['gender'] if 'gender' in response else None
+        self.race = response['race'] if 'race' in response else None
+        self.ethnicity = response['ethnicity'] if 'ethnicity' in response else None
+        self.recordStart = response['recordStart'] if 'recordStart' in response else None
+        self.recordEnd = response['recordEnd'] if 'recordEnd' in response else None
+
+    def __parseAgeRanges(self, response):
+        if response['ageRanges'] is not None:
+            self.ageRanges = [ self.__minutesToYears(age) for age in response['ageRanges'] ]
+        else:
+            self.ageRanges = []
 
     def __parseYears(self, response):
         if (response['yearRanges'] is not None):
@@ -140,27 +162,29 @@ class PatientData():
             self.uniqueNoteTypes = []
             self.noteTypes = {}        
 
-    def __parseIcd9(self, response):
-        if (response['icd9'] is not None):
-            result = []
-            icd9Data = {}
-            for key in response['icd9']:
+    def __parseIcd(self, response, version='icd9'):
+        assert(version in ['icd9', 'icd10'])
+        result = []
+        icdData = {}
+        if (response[version] is not None):
+            for key in response[version]:
                 result.append(key)
                 timeIntervals = []
-                icd9Data[key] = timeIntervals
+                icdData[key] = timeIntervals
                 pos = 0;
-                icd9TiData = response['icd9'][key];
-                while (pos < len(icd9TiData)):
+                icdTiData = response[version][key];
+                while (pos < len(icdTiData)):
                     primary = False
-                    if (icd9TiData[pos+1] == 'PRIMARY'):
+                    if (icdTiData[pos+1] == 'PRIMARY'):
                         primary = True
-                    timeIntervals.append(Icd9TimeInterval(self.__minutesToDays(int(icd9TiData[pos])), self.__minutesToDays(int(icd9TiData[pos+1])), primary))
+                    timeIntervals.append(IcdTimeInterval(self.__minutesToDays(int(icdTiData[pos])), self.__minutesToDays(int(icdTiData[pos+1])), primary))
                     pos = pos + 3
+        if version == 'icd9':
             self.uniqueIcd9 = result
-            self.icd9 = icd9Data
-        else:
-            self.uniqueIcd9 = []
-            self.icd9 = {}
+            self.icd9 = icdData
+        elif version == 'icd10':
+            self.uniqueIcd10 = result
+            self.icd10 = icdData
 
     def __parseRx(self, response):
         if (response['rx'] is not None):
@@ -345,7 +369,17 @@ class PatientData():
     
     def getEthnicity(self):
         return self.ethnicity
+
+    def getPatientAgeRanges(self):
+        return self. ageRanges
     
+    @property
+    def died(self):
+        if self.death != -1:
+            return True
+        else:
+            return False
+
     def hasDied(self):
         if self.death != -1:
             return True
@@ -360,6 +394,12 @@ class PatientData():
     
     def getIcd9TimeIntervals(self, icd9Code):
         return self.icd9[icd9Code]
+
+    def getUniqueIcd10Codes(self):
+        return self.uniqueIcd10
+    
+    def getIcd10TimeIntervals(self, icd10Code):
+        return self.icd10[icd10Code]
 
     def getUniqueCptCodes(self):
         return self.uniqueCpt
@@ -400,6 +440,13 @@ class PatientData():
     def getLabsNumericTimeIntervals(self, labCode):
         return self.labs[labCode]
 
+    def getLabsTimeIntervals(self, labCode):
+        assert(labCode not in self.labs or labCode not in self.labsCalculated)
+        if labCode in self.labs:
+            return self.labs[labCode]
+        else:
+            return self.labsCalculated[labCode]
+
     def getUniqueSnomedCodes(self):
         return self.uniqueSnomed
 
@@ -420,6 +467,12 @@ class PatientData():
     
     def getUniqueFamilyHistoryTerms(self):
         return self.uniqueFamilyHistoryTerms
+
+    def getUniqueVitals(self):
+        return self.uniqueVitals
+
+    def getVitalTimeIntervals(self, vital):
+        return self.vitals[vital]
 
     def getFamilyHistoryTermTimeIntervals(self, term):
         return self.familyHistoryTerms[term]
@@ -442,7 +495,7 @@ class TimeInterval():
     def getEnd(self):
         return self.end
 
-class Icd9TimeInterval():
+class IcdTimeInterval():
 
     def __init__(self, start, end, primaryDiagnosis):
         self.start = start
@@ -484,14 +537,22 @@ class NumericTimeInterval():
         self.start = start
         self.numericValue = numericValue
 
+    @property
+    def end(self):
+        return self.start
+
     def getStart(self):
         return self.start
         
     def getEnd(self):
-        return self.start
+        return self.end
     
-    def getValue(self):
+    @property
+    def value(self):
         return self.numericValue
+
+    def getValue(self):
+        return self.value
 
 class CalculatedLabsTimeInterval():
 
@@ -499,14 +560,22 @@ class CalculatedLabsTimeInterval():
         self.start = start
         self.calculatedValue = calculatedValue
 
+    @property
+    def end(self):
+        return self.start
+
     def getStart(self):
         return self.start
         
     def getEnd(self):
-        return self.start
+        return self.end
     
-    def getValue(self):
+    @property
+    def value(self):
         return self.calculatedValue
+
+    def getValue(self):
+        return self.value
 
 class TermTimeInterval():
 
@@ -515,11 +584,15 @@ class TermTimeInterval():
         self.noteId = noteId
         self.noteType = noteType
 
+    @property
+    def end(self):
+        return self.start
+
     def getStart(self):
         return self.start
         
     def getEnd(self):
-        return self.start
+        return self.end
     
     def getNoteId(self):
         return self.noteId
