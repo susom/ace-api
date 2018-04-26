@@ -67,10 +67,10 @@ class PatientData():
         self.__parseYears(response)
 
     def __minutesToDays(self, minutes):
-        return minutes / (24 * 60);
+        return minutes / (24 * 60.);
 
     def __minutesToYears(self, minutes):
-        return minutes / (24 * 60 * 365);
+        return minutes / (24 * 60 * 365.);
 
     def __parsePatientAttributes(self, response):
         self.death = response['death'] if 'death' in response else -1
