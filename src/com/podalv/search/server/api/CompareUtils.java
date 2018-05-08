@@ -1,8 +1,6 @@
 package com.podalv.search.server.api;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 import com.podalv.search.server.api.responses.DumpResponse;
 
@@ -13,32 +11,68 @@ public interface CompareUtils {
 
   static HashMap<Object, ArrayList<Object>> getMissingInLeft(final HashMap<Object, ArrayList<Object>> left, final HashMap<Object, ArrayList<Object>> right) {
     final HashMap<Object, ArrayList<Object>> result = new HashMap<>();
-    left.forEach((key, value) -> {
-      final ArrayList<Object> rightValue = right.get(key);
-      if (rightValue == null) {
-        result.put(key, value);
-      }
-    });
+    if (left == null && right != null) {
+      left.forEach((o, objects) -> result.put(o, objects));
+    }
+    else if (left != null) {
+      left.forEach((key, value) -> {
+        final ArrayList<Object> rightValue = right.get(key);
+        if (rightValue == null) {
+          result.put(key, value);
+        }
+      });
+    }
     return result;
   }
 
-  static HashMap<Object, ArrayList<Object>> getDifferentInLeft(final HashMap<Object, ArrayList<Object>> left, final HashMap<Object, ArrayList<Object>> right) {
+  static HashMap<Object, ArrayList<Object>> getDifferentInLeft(final HashMap<Object, ArrayList<Object>> left, final HashMap<Object, ArrayList<Object>> right,
+      final int numberOfValueColumns) {
     final HashMap<Object, ArrayList<Object>> result = new HashMap<>();
-    left.forEach((key, value) -> {
-      final ArrayList<Object> rightValue = right.get(key);
-      if (rightValue != null && !right.get(key).equals(value)) {
-        result.put(key, value);
-      }
-    });
+    if (left == null && right != null) {
+      left.forEach((o, objects) -> result.put(o, objects));
+    }
+    else if (left != null) {
+      left.forEach((key, value) -> {
+        final ArrayList<Object> rightValue = right.get(key);
+        if (rightValue != null && !right.get(key).equals(value)) {
+          final HashSet<ArrayList<Object>> rightSingle = extractSingleValue(numberOfValueColumns, rightValue);
+          final HashSet<ArrayList<Object>> leftSingle = extractSingleValue(numberOfValueColumns, value);
+          leftSingle.removeAll(rightSingle);
+          final Iterator<ArrayList<Object>> i = leftSingle.iterator();
+          final ArrayList<Object> diff = new ArrayList<>();
+          while (i.hasNext()) {
+            final ArrayList<Object> val = i.next();
+            for (final Object obj : val) {
+              diff.add(obj);
+            }
+          }
+          if (diff.size() != 0) {
+            result.put(key, diff);
+          }
+        }
+      });
+    }
     return result;
   }
 
-  static ComparisonResult compare(final HashMap<Object, ArrayList<Object>> left, final HashMap<Object, ArrayList<Object>> right) {
+  static HashSet<ArrayList<Object>> extractSingleValue(final int numberOfValueColumns, final ArrayList<Object> rightValue) {
+    final HashSet<ArrayList<Object>> values = new HashSet<>();
+    for (int x = 0; x < rightValue.size(); x += numberOfValueColumns) {
+      final ArrayList<Object> singleValue = new ArrayList<>();
+      for (int y = x; y < x + numberOfValueColumns; y++) {
+        singleValue.add(rightValue.get(y));
+      }
+      values.add(singleValue);
+    }
+    return values;
+  }
+
+  static ComparisonResult compare(final HashMap<Object, ArrayList<Object>> left, final HashMap<Object, ArrayList<Object>> right, final int numberOfValueColumns) {
     final ComparisonResult<HashMap<Object, ArrayList<Object>>> result = new ComparisonResult<>();
     result.setMissingLeft(getMissingInLeft(left, right));
     result.setMissingRight(getMissingInLeft(right, left));
-    result.setDifferentLeft(getDifferentInLeft(left, right));
-    result.setDifferentRight(getDifferentInLeft(right, left));
+    result.setDifferentLeft(getDifferentInLeft(left, right, numberOfValueColumns));
+    result.setDifferentRight(getDifferentInLeft(right, left, numberOfValueColumns));
 
     return result.missingLeft().size() == 0 && result.missingRight().size() == 0 && result.differentLeft().size() == 0 && result.differentRight().size() == 0
         ? new IdenticalComparisonResult()
@@ -47,6 +81,11 @@ public interface CompareUtils {
 
   static String explainDiff(final String prefix, final Object o1, final Object o2) {
     return !Objects.equals(o1, o2) ? prefix : "";
+  }
+
+  static String explainDiff(final String prefix, final HashMap o1, final HashMap o2, final int numberOfValueColumns) {
+    final ComparisonResult<HashMap<Object, ArrayList<Object>>> result = compare(o1, o2, numberOfValueColumns);
+    return result instanceof IdenticalComparisonResult ? "" : prefix;
   }
 
   static String explain(final DumpResponse patient1, final DumpResponse patient2) {
@@ -61,19 +100,19 @@ public interface CompareUtils {
         explainDiff("ETH ", patient1.getEthnicity(), patient2.getEthnicity()) + //
         explainDiff("SELQ ", patient1.getSelectionQuery(), patient2.getSelectionQuery()) + //
         explainDiff("ERR ", patient1.getError(), patient2.getError()) + //
-        explainDiff("ICD9 ", patient1.getIcd9(), patient2.getIcd9()) + //
-        explainDiff("CPT ", patient1.getCpt(), patient2.getCpt()) + //
-        explainDiff("RX ", patient1.getRx(), patient2.getRx()) + //
-        explainDiff("SNOMED ", patient1.getSnomed(), patient2.getSnomed()) + //
-        explainDiff("NEGT ", patient1.getNegatedTerms(), patient2.getNegatedTerms()) + //
-        explainDiff("FAMT ", patient1.getFhTerms(), patient2.getFhTerms()) + //
-        explainDiff("POST ", patient1.getPositiveTerms(), patient2.getPositiveTerms()) + //
-        explainDiff("VIS ", patient1.getVisitTypes(), patient2.getVisitTypes()) + //      
-        explainDiff("NOT ", patient1.getNoteTypes(), patient2.getNoteTypes()) + //
+        explainDiff("ICD9 ", patient1.getIcd9(), patient2.getIcd9(), 3) + //
+        explainDiff("CPT ", patient1.getCpt(), patient2.getCpt(), 2) + //
+        explainDiff("RX ", patient1.getRx(), patient2.getRx(), 3) + //
+        explainDiff("SNOMED ", patient1.getSnomed(), patient2.getSnomed(), 2) + //
+        explainDiff("NEGT ", patient1.getNegatedTerms(), patient2.getNegatedTerms(), 2) + //
+        explainDiff("FAMT ", patient1.getFhTerms(), patient2.getFhTerms(), 2) + //
+        explainDiff("POST ", patient1.getPositiveTerms(), patient2.getPositiveTerms(), 2) + //
+        explainDiff("VIS ", patient1.getVisitTypes(), patient2.getVisitTypes(), 2) + //      
+        explainDiff("NOT ", patient1.getNoteTypes(), patient2.getNoteTypes(), 2) + //
         explainDiff("ATC ", patient1.getAtc(), patient2.getAtc()) + //
-        explainDiff("LABS ", patient1.getLabs(), patient2.getLabs()) + //
-        explainDiff("LABSR ", patient1.getLabsRaw(), patient2.getLabsRaw()) + //
-        explainDiff("VIT ", patient1.getVitals(), patient2.getVitals()) + //          
+        explainDiff("LABS ", patient1.getLabs(), patient2.getLabs(), 2) + //
+        explainDiff("LABSR ", patient1.getLabsRaw(), patient2.getLabsRaw(), 2) + //
+        explainDiff("VIT ", patient1.getVitals(), patient2.getVitals(), 2) + //          
         explainDiff("ENC ", patient1.getEncounterDays(), patient2.getEncounterDays()) + //
         explainDiff("AGE ", patient1.getAgeRanges(), patient2.getAgeRanges()) + //
         explainDiff("YR ", patient1.getYearRanges(), patient2.getYearRanges());
