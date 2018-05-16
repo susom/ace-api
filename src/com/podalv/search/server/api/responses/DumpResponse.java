@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public class DumpResponse {
 
-  private final int                            patientId;
+  private final long                           patientId;
   private int                                  recordStart;
   private int                                  recordEnd;
   private int                                  death;
@@ -45,7 +45,7 @@ public class DumpResponse {
     return result;
   }
 
-  public DumpResponse(final int patientId) {
+  public DumpResponse(final long patientId) {
     this.patientId = patientId;
   }
 
@@ -253,7 +253,7 @@ public class DumpResponse {
     return cpt;
   }
 
-  public int getPatientId() {
+  public long getPatientId() {
     return patientId;
   }
 
@@ -263,7 +263,7 @@ public class DumpResponse {
 
   @Override
   public int hashCode() {
-    return patientId;
+    return Long.hashCode(patientId);
   }
 
   @Override

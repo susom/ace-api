@@ -10,8 +10,8 @@ import com.podalv.search.server.api.responses.DumpResponse;
 public class TestCompare {
 
   public static void main(final String[] args) throws IOException, QueryException {
-    final AtlasConnection atlas1 = new AtlasConnection("http://35.233.161.252:8080");
-    final AtlasConnection atlas2 = new AtlasConnection("http://35.233.161.252:8081");
+    final AtlasConnection atlas1 = new AtlasConnection("http://35.185.230.189:8081");
+    final AtlasConnection atlas2 = new AtlasConnection("http://35.185.230.189:8081");
 
     assert atlas1.test() && atlas2.test();
 
@@ -26,7 +26,7 @@ public class TestCompare {
         final DumpResponse p1 = atlas1.getPatientDumpResponse(pid);
         final DumpResponse p2 = atlas2.getPatientDumpResponse(pid);
         if (!p1.equals(p2)) {
-          if (pid == 9235120) {
+          if (pid == 9234884) {
             final ComparisonResult result = CompareUtils.compare((HashMap) p1.getVitals(), (HashMap) p1.getVitals(), 2);
             System.out.println("MISSING ORIG: " + result.missingLeft());
             System.out.println("MISSING NEW : " + result.missingRight());

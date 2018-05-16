@@ -9,25 +9,25 @@ import com.google.gson.Gson;
  */
 public class DumpRequest {
 
-  private final int patientId;
-  private boolean   icd9;
-  private boolean   cpt;
-  private boolean   rx;
-  private boolean   snomed;
-  private boolean   notes;
-  private boolean   visitTypes;
-  private boolean   noteTypes;
-  private boolean   encounterDays;
-  private boolean   ageRanges;
-  private boolean   labs;
-  private boolean   vitals;
-  private boolean   atc;
-  private int[]     yearRanges;
-  private String    selectionQuery;
-  private boolean   containsStart;
-  private boolean   containsEnd;
+  private final long patientId;
+  private boolean    icd9;
+  private boolean    cpt;
+  private boolean    rx;
+  private boolean    snomed;
+  private boolean    notes;
+  private boolean    visitTypes;
+  private boolean    noteTypes;
+  private boolean    encounterDays;
+  private boolean    ageRanges;
+  private boolean    labs;
+  private boolean    vitals;
+  private boolean    atc;
+  private int[]      yearRanges;
+  private String     selectionQuery;
+  private boolean    containsStart;
+  private boolean    containsEnd;
 
-  public static DumpRequest createFull(final int patientId) {
+  public static DumpRequest createFull(final long patientId) {
     final DumpRequest req = new DumpRequest(patientId);
     req.setAgeRanges(true);
     req.setAtc(true);
@@ -61,7 +61,7 @@ public class DumpRequest {
     this.yearRanges = yearRanges;
   }
 
-  public DumpRequest(final int patientId) {
+  public DumpRequest(final long patientId) {
     this.patientId = patientId;
   }
 
@@ -113,7 +113,7 @@ public class DumpRequest {
     this.icd9 = icd9;
   }
 
-  public int getPatientId() {
+  public long getPatientId() {
     return patientId;
   }
 
