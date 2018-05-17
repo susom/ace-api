@@ -1,5 +1,6 @@
 package com.podalv.search.server.api.requests;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 
 /** Request to dump selected patients
@@ -9,29 +10,63 @@ import com.google.gson.Gson;
  */
 public class DumpRequest {
 
-  private final long patientId;
-  private boolean    icd9;
-  private boolean    cpt;
-  private boolean    rx;
-  private boolean    snomed;
-  private boolean    notes;
-  private boolean    visitTypes;
-  private boolean    noteTypes;
-  private boolean    encounterDays;
-  private boolean    ageRanges;
-  private boolean    labs;
-  private boolean    vitals;
-  private boolean    atc;
-  private int[]      yearRanges;
-  private String     selectionQuery;
-  private boolean    containsStart;
-  private boolean    containsEnd;
+  @JsonProperty("patientId") private final Long    patientId;
+  @JsonProperty("patientIds") private final long[] patientIds;
+  @JsonProperty("icd9") private boolean            icd9;
+  @JsonProperty("icd10") private boolean           icd10;
+  @JsonProperty("departments") private boolean     departments;
+  @JsonProperty("cpt") private boolean             cpt;
+  @JsonProperty("rx") private boolean              rx;
+  @JsonProperty("snomed") private boolean          snomed;
+  @JsonProperty("notes") private boolean           notes;
+  @JsonProperty("visitTypes") private boolean      visitTypes;
+  @JsonProperty("noteTypes") private boolean       noteTypes;
+  @JsonProperty("encounterDays") private boolean   encounterDays;
+  @JsonProperty("ageRanges") private boolean       ageRanges;
+  @JsonProperty("labs") private boolean            labs;
+  @JsonProperty("vitals") private boolean          vitals;
+  @JsonProperty("atc") private boolean             atc;
+  @JsonProperty("selectionQuery") private String   selectionQuery;
+  @JsonProperty("containsStart") private boolean   containsStart;
+  @JsonProperty("containsEnd") private boolean     containsEnd;
+
+  public static DumpRequest createWorkshopRequest(final long patientId) {
+    final DumpRequest r = new DumpRequest(patientId);
+    r.setIcd9(true);
+    r.setIcd10(true);
+    r.setIcd10(true);
+    r.setDepartments(true);
+    r.setCpt(true);
+    r.setRx(true);
+    r.setLabs(true);
+    r.setVitals(true);
+    r.setNotes(false);
+    r.setNoteTypes(true);
+    return r;
+  }
+
+  public static DumpRequest createWorkshopRequest(final long[] patientIds) {
+    final DumpRequest r = new DumpRequest(patientIds);
+    r.setIcd9(true);
+    r.setIcd10(true);
+    r.setIcd10(true);
+    r.setDepartments(true);
+    r.setCpt(true);
+    r.setRx(true);
+    r.setLabs(true);
+    r.setVitals(true);
+    r.setNotes(false);
+    r.setNoteTypes(true);
+    return r;
+  }
 
   public static DumpRequest createFull(final long patientId) {
     final DumpRequest req = new DumpRequest(patientId);
     req.setAgeRanges(true);
     req.setAtc(true);
     req.setCpt(true);
+    req.setIcd10(true);
+    req.setDepartments(true);
     req.setEncounterDays(true);
     req.setIcd9(true);
     req.setLabs(true);
@@ -41,28 +76,43 @@ public class DumpRequest {
     req.setVisitTypes(true);
     req.setVitals(true);
     req.setNoteTypes(true);
-    req.setYearRanges(new int[] {0, 2100});
     return req;
   }
 
-  public void setContainsEnd(final boolean containsEnd) {
-    this.containsEnd = containsEnd;
+  public static DumpRequest createFull(final long[] patientIds) {
+    final DumpRequest req = new DumpRequest(patientIds);
+    req.setAgeRanges(true);
+    req.setAtc(true);
+    req.setCpt(true);
+    req.setIcd10(true);
+    req.setDepartments(true);
+    req.setEncounterDays(true);
+    req.setIcd9(true);
+    req.setLabs(true);
+    req.setNotes(true);
+    req.setRx(true);
+    req.setSnomed(true);
+    req.setVisitTypes(true);
+    req.setVitals(true);
+    req.setNoteTypes(true);
+    return req;
   }
 
-  public void setContainsStart(final boolean containsStart) {
-    this.containsStart = containsStart;
-  }
-
-  public void setSelectionQuery(final String selectionQuery) {
-    this.selectionQuery = selectionQuery;
-  }
-
-  public void setYearRanges(final int[] yearRanges) {
-    this.yearRanges = yearRanges;
+  public DumpRequest setQuery(final String query, final boolean start, final boolean end) {
+    selectionQuery = query;
+    containsStart = start;
+    containsEnd = end;
+    return this;
   }
 
   public DumpRequest(final long patientId) {
     this.patientId = patientId;
+    patientIds = null;
+  }
+
+  public DumpRequest(final long[] patientIds) {
+    patientId = null;
+    this.patientIds = patientIds;
   }
 
   public void setAtc(final boolean atc) {
@@ -89,6 +139,22 @@ public class DumpRequest {
     this.snomed = snomed;
   }
 
+  public void setIcd10(final boolean icd10) {
+    this.icd10 = icd10;
+  }
+
+  public void setDepartments(final boolean departments) {
+    this.departments = departments;
+  }
+
+  public boolean isIcd10() {
+    return icd10;
+  }
+
+  public boolean isDepartments() {
+    return departments;
+  }
+
   public void setEncounterDays(final boolean encounterDays) {
     this.encounterDays = encounterDays;
   }
@@ -113,7 +179,7 @@ public class DumpRequest {
     this.icd9 = icd9;
   }
 
-  public long getPatientId() {
+  public Long getPatientId() {
     return patientId;
   }
 
@@ -125,8 +191,24 @@ public class DumpRequest {
     return rx;
   }
 
+  public String getSelectionQuery() {
+    return selectionQuery;
+  }
+
+  public boolean isContainsEnd() {
+    return containsEnd;
+  }
+
+  public boolean isContainsStart() {
+    return containsStart;
+  }
+
   public boolean isNotes() {
     return notes;
+  }
+
+  public long[] getPatientIds() {
+    return patientIds;
   }
 
   public boolean isSnomed() {
@@ -153,18 +235,6 @@ public class DumpRequest {
     return labs;
   }
 
-  public boolean isContainsEnd() {
-    return containsEnd;
-  }
-
-  public boolean isContainsStart() {
-    return containsStart;
-  }
-
-  public String getSelectionQuery() {
-    return selectionQuery;
-  }
-
   public boolean isVitals() {
     return vitals;
   }
@@ -173,16 +243,32 @@ public class DumpRequest {
     return noteTypes;
   }
 
-  public int[] getYearRanges() {
-    return yearRanges;
-  }
-
   public boolean isAtc() {
     return atc;
   }
 
+  public DumpRequest clone(final long patientId) {
+    final DumpRequest req = new DumpRequest(patientId);
+    req.setAgeRanges(ageRanges);
+    req.setAtc(atc);
+    req.setCpt(cpt);
+    req.setDepartments(departments);
+    req.setEncounterDays(encounterDays);
+    req.setIcd10(icd10);
+    req.setIcd9(icd9);
+    req.setLabs(labs);
+    req.setNotes(notes);
+    req.setNoteTypes(noteTypes);
+    req.setQuery(selectionQuery, containsStart, containsEnd);
+    req.setRx(rx);
+    req.setSnomed(snomed);
+    req.setVisitTypes(visitTypes);
+    req.setVitals(vitals);
+    return req;
+  }
+
   public static void main(final String[] args) {
-    final DumpRequest req = DumpRequest.createFull(1);
+    final DumpRequest req = new DumpRequest(new long[] {5538, 5539, 5540, 5541, 5542});
     req.setAgeRanges(true);
     req.setAtc(true);
     req.setIcd9(true);

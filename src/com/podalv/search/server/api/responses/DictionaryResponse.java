@@ -2,17 +2,28 @@ package com.podalv.search.server.api.responses;
 
 import java.util.HashMap;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class DictionaryResponse {
 
-  private HashMap<String, String> cpt;
-  private HashMap<String, String> icd9;
-  private HashMap<String, String> atc;
-  private HashMap<String, String> labs;
-  private HashMap<String, String> vitals;
-  private HashMap<String, String> rxNorm;
+  @JsonProperty("cpt") private HashMap<String, String>    cpt;
+  @JsonProperty("icd9") private HashMap<String, String>   icd9;
+  @JsonProperty("icd10") private HashMap<String, String>  icd10;
+  @JsonProperty("atc") private HashMap<String, String>    atc;
+  @JsonProperty("labs") private HashMap<String, String>   labs;
+  @JsonProperty("vitals") private HashMap<String, String> vitals;
+  @JsonProperty("rxNorm") private HashMap<String, String> rxNorm;
 
   public void setAtc(final HashMap<String, String> atc) {
     this.atc = atc;
+  }
+
+  public void setIcd10(final HashMap<String, String> icd10) {
+    this.icd10 = icd10;
+  }
+
+  public HashMap<String, String> getIcd10() {
+    return icd10;
   }
 
   public void setCpt(final HashMap<String, String> cpt) {

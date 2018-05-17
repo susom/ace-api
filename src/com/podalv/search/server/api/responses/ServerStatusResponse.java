@@ -2,11 +2,22 @@ package com.podalv.search.server.api.responses;
 
 public class ServerStatusResponse {
 
-  private static String OK_RESPONSE = "OK";
-  private String        status;
-  private String        datasetVersion;
-  private String        version;
-  private boolean       workshop;
+  private static final String OK_RESPONSE = "OK";
+  private String              status;
+  private final String        datasetVersion;
+  private final String        version;
+  private boolean             workshop;
+
+  public static ServerStatusResponse createOkResponse(final String version, final boolean workshop, final String datasetVersion) {
+    return new ServerStatusResponse(version, OK_RESPONSE, workshop, datasetVersion);
+  }
+
+  public ServerStatusResponse(final String version, final String status, final boolean workshop, final String dataSetVersion) {
+    this.version = version;
+    this.status = status;
+    this.workshop = workshop;
+    datasetVersion = dataSetVersion;
+  }
 
   public String getStatus() {
     return status;

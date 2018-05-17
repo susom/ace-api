@@ -229,9 +229,7 @@ public class AtlasConnection {
   public PatientData getPatient(final int patientId, final String selectionQuery, final boolean containsStart, final boolean containsEnd) throws JsonSyntaxException, IOException,
       QueryException {
     final DumpRequest request = DumpRequest.createFull(patientId);
-    request.setSelectionQuery(selectionQuery);
-    request.setContainsStart(containsStart);
-    request.setContainsEnd(containsEnd);
+    request.setQuery(selectionQuery, containsStart, containsEnd);
     final DumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), 0), DumpResponse.class);
     return PatientData.create(response);
   }

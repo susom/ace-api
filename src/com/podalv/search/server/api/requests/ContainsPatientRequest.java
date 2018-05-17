@@ -2,17 +2,17 @@ package com.podalv.search.server.api.requests;
 
 public class ContainsPatientRequest {
 
-  private int patientId;
+  private long patientId;
 
-  public ContainsPatientRequest(final int pid) {
-    this.patientId = pid;
+  public ContainsPatientRequest(final long pid) {
+    patientId = pid;
   }
 
-  public int getPatientId() {
+  public long getPatientId() {
     return patientId;
   }
 
-  public void setPatientId(final int patientId) {
+  public void setPatientId(final long patientId) {
     this.patientId = patientId;
   }
 

@@ -1,12 +1,15 @@
 package com.podalv.search.server.api.requests;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class DictionaryRequest {
 
-  private String[] cpt;
-  private String[] icd9;
-  private String[] atc;
-  private String[] labs;
-  private String[] rxNorm;
+  @JsonProperty("cpt") private String[]    cpt;
+  @JsonProperty("icd9") private String[]   icd9;
+  @JsonProperty("icd10") private String[]  icd10;
+  @JsonProperty("atc") private String[]    atc;
+  @JsonProperty("labs") private String[]   labs;
+  @JsonProperty("rxNorm") private String[] rxNorm;
 
   public String[] getAtc() {
     return atc;
@@ -18,6 +21,10 @@ public class DictionaryRequest {
 
   public String[] getIcd9() {
     return icd9;
+  }
+
+  public String[] getIcd10() {
+    return icd10;
   }
 
   public String[] getLabs() {

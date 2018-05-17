@@ -1,23 +1,24 @@
 package com.podalv.search.server.api.requests;
 
 import java.util.Arrays;
+import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 
 public class PatientSearchRequest {
 
-  String                query;
-  private boolean       returnPids          = true;
-  private boolean       returnTimeIntervals = false;
-  private boolean       returnSurvivalData  = false;
-  private int           pidCntLimit         = Integer.MAX_VALUE;
-  //only check the status of a query on server, but do not initiate a new query if query does not exist
-  private final boolean checkStatus         = false;
-  private int           statisticsLimit     = Integer.MAX_VALUE;
-  private int[]         encounterBuckets;
-  private int[]         durationBuckets;
-  private boolean       binary              = false;
-  private int[]         searchablePids;
+  @JsonProperty("query") String                        query;
+  @JsonProperty("returnPids") private boolean          returnPids          = true;
+  @JsonProperty("returnTimeIntervals") private boolean returnTimeIntervals = false;
+  @JsonProperty("returnSurvivalData") private boolean  returnSurvivalData  = false;
+  @JsonProperty("pidCntLimit") private int             pidCntLimit         = Integer.MAX_VALUE;
+  @JsonProperty("checkStatus") private boolean         checkStatus         = false;
+  @JsonProperty("statisticsLimit") private int         statisticsLimit     = Integer.MAX_VALUE;
+  @JsonProperty("encounterBuckets") private int[]      encounterBuckets;
+  @JsonProperty("durationBuckets") private int[]       durationBuckets;
+  @JsonProperty("binary") private boolean              binary              = false;
+  @JsonProperty("searchablePids") private long[]       searchablePids;
 
   public static PatientSearchRequest create(final String query) {
     final PatientSearchRequest result = new PatientSearchRequest();
@@ -25,12 +26,22 @@ public class PatientSearchRequest {
     return result;
   }
 
-  public void setEncounterBuckets(final int[] encounterBuckets) {
+  public PatientSearchRequest setEncounterBuckets(final int[] encounterBuckets) {
     this.encounterBuckets = encounterBuckets;
+    return this;
   }
 
-  public void setDurationBuckets(final int[] durationBuckets) {
+  public void setCheckStatus(final boolean checkStatus) {
+    this.checkStatus = checkStatus;
+  }
+
+  public boolean isCheckStatus() {
+    return checkStatus;
+  }
+
+  public PatientSearchRequest setDurationBuckets(final int[] durationBuckets) {
     this.durationBuckets = durationBuckets;
+    return this;
   }
 
   public int[] getDurationBuckets() {
@@ -39,10 +50,6 @@ public class PatientSearchRequest {
 
   public int[] getEncounterBuckets() {
     return encounterBuckets;
-  }
-
-  public boolean isCheckStatusQuery() {
-    return checkStatus;
   }
 
   public void setBinary(final boolean binary) {
@@ -58,7 +65,7 @@ public class PatientSearchRequest {
   }
 
   public boolean isReturnSurvivalData() {
-    return this.returnSurvivalData;
+    return returnSurvivalData;
   }
 
   public int getStatisticsLimit() {
@@ -77,20 +84,21 @@ public class PatientSearchRequest {
     return pidCntLimit;
   }
 
-  public void setSearchablePids(final int[] searchablePids) {
+  public void setSearchablePids(final long[] searchablePids) {
     this.searchablePids = searchablePids;
   }
 
-  public int[] getSearchablePids() {
+  public long[] getSearchablePids() {
     return searchablePids;
   }
 
   public String getQuery() {
-    return query.trim();
+    return query;
   }
 
-  public void setReturnTimeIntervals(final boolean returnTimeIntervals) {
+  public PatientSearchRequest setReturnTimeIntervals(final boolean returnTimeIntervals) {
     this.returnTimeIntervals = returnTimeIntervals;
+    return this;
   }
 
   public void setReturnPids(final boolean returnPids) {
@@ -98,11 +106,11 @@ public class PatientSearchRequest {
   }
 
   public boolean isReturnPids() {
-    return this.returnPids;
+    return returnPids;
   }
 
   public boolean isReturnTimeIntervals() {
-    return this.returnTimeIntervals;
+    return returnTimeIntervals;
   }
 
   public boolean isPidRequest() {
@@ -143,15 +151,11 @@ public class PatientSearchRequest {
     return query.hashCode();
   }
 
-  private boolean compareStrings(final String str1, final String str2) {
-    return (str1 == null && str2 == null) || (str1 != null && str2 != null && str1.equals(str2));
-  }
-
   @Override
   public boolean equals(final Object obj) {
     if (obj != null && obj instanceof PatientSearchRequest) {
       final PatientSearchRequest req = (PatientSearchRequest) obj;
-      return compareStrings(query, req.query) && req.returnPids == returnPids && req.returnTimeIntervals == returnTimeIntervals;
+      return Objects.equals(query, req.query) && req.returnPids == returnPids && req.returnTimeIntervals == returnTimeIntervals && req.pidCntLimit == pidCntLimit;
     }
     return false;
   }

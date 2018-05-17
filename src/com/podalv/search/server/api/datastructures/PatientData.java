@@ -3,12 +3,7 @@ package com.podalv.search.server.api.datastructures;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
@@ -16,12 +11,7 @@ import com.google.gson.JsonSyntaxException;
 import com.podalv.search.server.api.exceptions.QueryException;
 import com.podalv.search.server.api.iterators.ImmutableIterator;
 import com.podalv.search.server.api.responses.DumpResponse;
-import com.podalv.search.server.api.timeintervals.TimeInterval;
-import com.podalv.search.server.api.timeintervals.TimeIntervalIcd9;
-import com.podalv.search.server.api.timeintervals.TimeIntervalLabs;
-import com.podalv.search.server.api.timeintervals.TimeIntervalNumericValue;
-import com.podalv.search.server.api.timeintervals.TimeIntervalRxNorm;
-import com.podalv.search.server.api.timeintervals.TimeIntervalTerm;
+import com.podalv.search.server.api.timeintervals.*;
 
 /** Contains all the data about the patient in the database. Can be generated from a DumpResponse
  *
@@ -38,7 +28,6 @@ public class PatientData {
 
   /** From a dump file response creates PatientData object
   *
-  * @param response
   * @return
   * @throws QueryException if the patient did not exist or the response did not return any data
    * @throws FileNotFoundException
@@ -532,14 +521,14 @@ public class PatientData {
   }
 
   private PatientData(final DumpResponse response) {
-    this.data = response;
+    data = response;
   }
 
   private Set<String> getUniqueCodes(final HashMap<String, ?> map) {
     return map != null ? map.keySet() : new HashSet<>();
   }
 
-  public int getPatientId() {
+  public long getPatientId() {
     return data.getPatientId();
   }
 
@@ -583,7 +572,7 @@ public class PatientData {
     return data.getEthnicity();
   }
 
-  private ArrayList<TimeInterval> generateTimeIntervals(final ArrayList<Integer> array) {
+  private ArrayList<TimeInterval> generateTimeIntervals(final List<Integer> array) {
     final ArrayList<TimeInterval> result = new ArrayList<>();
     if (array != null) {
       for (int x = 0; x < array.size(); x += 2) {
