@@ -43,6 +43,10 @@ public class DictionaryRequest {
     this.cpt = cpt;
   }
 
+  public void setIcd10(final String[] icd10) {
+    this.icd10 = icd10;
+  }
+
   public void setIcd9(final String[] icd9) {
     this.icd9 = icd9;
   }

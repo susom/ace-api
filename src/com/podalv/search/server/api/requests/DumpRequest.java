@@ -45,41 +45,7 @@ public class DumpRequest {
     return r;
   }
 
-  public static DumpRequest createWorkshopRequest(final long[] patientIds) {
-    final DumpRequest r = new DumpRequest(patientIds);
-    r.setIcd9(true);
-    r.setIcd10(true);
-    r.setIcd10(true);
-    r.setDepartments(true);
-    r.setCpt(true);
-    r.setRx(true);
-    r.setLabs(true);
-    r.setVitals(true);
-    r.setNotes(false);
-    r.setNoteTypes(true);
-    return r;
-  }
-
-  public static DumpRequest createFull(final long patientId) {
-    final DumpRequest req = new DumpRequest(patientId);
-    req.setAgeRanges(true);
-    req.setAtc(true);
-    req.setCpt(true);
-    req.setIcd10(true);
-    req.setDepartments(true);
-    req.setEncounterDays(true);
-    req.setIcd9(true);
-    req.setLabs(true);
-    req.setNotes(true);
-    req.setRx(true);
-    req.setSnomed(true);
-    req.setVisitTypes(true);
-    req.setVitals(true);
-    req.setNoteTypes(true);
-    return req;
-  }
-
-  public static DumpRequest createFull(final long[] patientIds) {
+  public static DumpRequest createFull(final long ... patientIds) {
     final DumpRequest req = new DumpRequest(patientIds);
     req.setAgeRanges(true);
     req.setAtc(true);
@@ -268,7 +234,7 @@ public class DumpRequest {
   }
 
   public static void main(final String[] args) {
-    final DumpRequest req = new DumpRequest(new long[] {5538, 5539, 5540, 5541, 5542});
+    final DumpRequest req = new DumpRequest(new long[] {5538});
     req.setAgeRanges(true);
     req.setAtc(true);
     req.setIcd9(true);
