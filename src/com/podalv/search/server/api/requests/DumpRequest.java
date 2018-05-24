@@ -10,25 +10,24 @@ import com.google.gson.Gson;
  */
 public class DumpRequest {
 
-  @JsonProperty("patientId") private final Long    patientId;
-  @JsonProperty("patientIds") private final long[] patientIds;
-  @JsonProperty("icd9") private boolean            icd9;
-  @JsonProperty("icd10") private boolean           icd10;
-  @JsonProperty("departments") private boolean     departments;
-  @JsonProperty("cpt") private boolean             cpt;
-  @JsonProperty("rx") private boolean              rx;
-  @JsonProperty("snomed") private boolean          snomed;
-  @JsonProperty("notes") private boolean           notes;
-  @JsonProperty("visitTypes") private boolean      visitTypes;
-  @JsonProperty("noteTypes") private boolean       noteTypes;
-  @JsonProperty("encounterDays") private boolean   encounterDays;
-  @JsonProperty("ageRanges") private boolean       ageRanges;
-  @JsonProperty("labs") private boolean            labs;
-  @JsonProperty("vitals") private boolean          vitals;
-  @JsonProperty("atc") private boolean             atc;
-  @JsonProperty("selectionQuery") private String   selectionQuery;
-  @JsonProperty("containsStart") private boolean   containsStart;
-  @JsonProperty("containsEnd") private boolean     containsEnd;
+  @JsonProperty("patientId") private final Long  patientId;
+  @JsonProperty("icd9") private boolean          icd9;
+  @JsonProperty("icd10") private boolean         icd10;
+  @JsonProperty("departments") private boolean   departments;
+  @JsonProperty("cpt") private boolean           cpt;
+  @JsonProperty("rx") private boolean            rx;
+  @JsonProperty("snomed") private boolean        snomed;
+  @JsonProperty("notes") private boolean         notes;
+  @JsonProperty("visitTypes") private boolean    visitTypes;
+  @JsonProperty("noteTypes") private boolean     noteTypes;
+  @JsonProperty("encounterDays") private boolean encounterDays;
+  @JsonProperty("ageRanges") private boolean     ageRanges;
+  @JsonProperty("labs") private boolean          labs;
+  @JsonProperty("vitals") private boolean        vitals;
+  @JsonProperty("atc") private boolean           atc;
+  @JsonProperty("selectionQuery") private String selectionQuery;
+  @JsonProperty("containsStart") private boolean containsStart;
+  @JsonProperty("containsEnd") private boolean   containsEnd;
 
   public static DumpRequest createWorkshopRequest(final long patientId) {
     final DumpRequest r = new DumpRequest(patientId);
@@ -45,8 +44,8 @@ public class DumpRequest {
     return r;
   }
 
-  public static DumpRequest createFull(final long ... patientIds) {
-    final DumpRequest req = new DumpRequest(patientIds);
+  public static DumpRequest createFull(final long patientId) {
+    final DumpRequest req = new DumpRequest(patientId);
     req.setAgeRanges(true);
     req.setAtc(true);
     req.setCpt(true);
@@ -73,12 +72,6 @@ public class DumpRequest {
 
   public DumpRequest(final long patientId) {
     this.patientId = patientId;
-    patientIds = null;
-  }
-
-  public DumpRequest(final long[] patientIds) {
-    patientId = null;
-    this.patientIds = patientIds;
   }
 
   public void setAtc(final boolean atc) {
@@ -173,10 +166,6 @@ public class DumpRequest {
     return notes;
   }
 
-  public long[] getPatientIds() {
-    return patientIds;
-  }
-
   public boolean isSnomed() {
     return snomed;
   }
@@ -234,7 +223,7 @@ public class DumpRequest {
   }
 
   public static void main(final String[] args) {
-    final DumpRequest req = new DumpRequest(new long[] {5538});
+    final DumpRequest req = new DumpRequest(5538);
     req.setAgeRanges(true);
     req.setAtc(true);
     req.setIcd9(true);
