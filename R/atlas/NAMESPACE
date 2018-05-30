@@ -1,0 +1,5 @@
+import(httr)
+importFrom("utils", "read.csv")
+export(atlas.connect)
+export(atlas.csv)
+export(atlas.query)
