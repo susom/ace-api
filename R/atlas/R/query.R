@@ -73,9 +73,6 @@ atlas.query <- function(connection, query, output_time=FALSE) {
 
 #'
 atlas.csv <- function(connection, query, file_name=NULL) {
-  if (!startsWith(tolower(trimws(query, which="both")), "csv(")) {
-    stop("Not a CSV() query")
-  }
   request <- paste0('{"query":"', gsub(pattern = '"', replacement = '\\\\"', x = query), '", "returnTimeIntervals": false}')
   print(request)
   response <- httr::POST(url = paste0(connection$url,'/query'), body = request)

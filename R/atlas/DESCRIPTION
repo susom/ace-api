@@ -1,7 +1,7 @@
 Package: atlas
 Type: Package
 Title: Stanford 'ATLAS' Search Engine API
-Version: 0.5.0
+Version: 0.6.0
 Author: Vladimir Polony
 Maintainer: Vladimir Polony <podalv@gmail.com>
 Description: Stanford 'ATLAS' (Advanced Temporal Search Engine) is a powerful tool that allows constructing
