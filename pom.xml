@@ -3,9 +3,8 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.podalv</groupId>
     <artifactId>AtlasAPI</artifactId>
-    <version>1.1</version>
+    <version>2.0</version>
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
