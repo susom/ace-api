@@ -62,7 +62,7 @@ public class PatientData {
    */
   public ArrayList<TimeIntervalIcd9> getIcd9TimeIntervals(final String icd9) {
     final ArrayList<TimeIntervalIcd9> result = new ArrayList<>();
-    final ArrayList<String> list = data.getIcd9().get(icd9);
+    final List<String> list = data.getIcd9().get(icd9);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 3) {
         result.add(new TimeIntervalIcd9(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x + 1))), list.get(x + 2)));
@@ -300,7 +300,7 @@ public class PatientData {
    */
   public ArrayList<TimeIntervalLabs> getLabsComputedTimeIntervals(final String lab) {
     final ArrayList<TimeIntervalLabs> result = new ArrayList<>();
-    final ArrayList<String> list = data.getLabs().get(lab);
+    final List<String> list = data.getLabs().get(lab);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
         result.add(new TimeIntervalLabs(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), list.get(x + 1)));
@@ -318,7 +318,7 @@ public class PatientData {
    */
   public ArrayList<TimeIntervalNumericValue> getLabsNumericTimeIntervals(final String lab) {
     final ArrayList<TimeIntervalNumericValue> result = new ArrayList<>();
-    final ArrayList<String> list = data.getLabsRaw().get(lab);
+    final List<String> list = data.getLabsRaw().get(lab);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
         result.add(new TimeIntervalNumericValue(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), Double.parseDouble(list.get(x + 1))));
@@ -336,7 +336,7 @@ public class PatientData {
    */
   public ArrayList<TimeInterval> getYearTimeIntervals(final int year) {
     final ArrayList<TimeInterval> result = new ArrayList<>();
-    final ArrayList<Integer> list = data.getYearRanges().get(year);
+    final List<Integer> list = data.getYearRanges().get(year);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
         result.add(new TimeInterval(minutesToDays(list.get(x)), minutesToDays(list.get(x + 1))));
@@ -353,7 +353,7 @@ public class PatientData {
    */
   public ArrayList<TimeIntervalNumericValue> getVitalsTimeIntervals(final String vitalsName) {
     final ArrayList<TimeIntervalNumericValue> result = new ArrayList<>();
-    final ArrayList<String> list = data.getVitals().get(vitalsName);
+    final List<String> list = data.getVitals().get(vitalsName);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
         result.add(new TimeIntervalNumericValue(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), Double.parseDouble(list.get(x + 1))));
@@ -370,7 +370,7 @@ public class PatientData {
    */
   public ArrayList<TimeIntervalTerm> getPositiveTermTimeIntervals(final String term) {
     final ArrayList<TimeIntervalTerm> result = new ArrayList<>();
-    final ArrayList<String> list = data.getPositiveTerms().get(term);
+    final List<String> list = data.getPositiveTerms().get(term);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 3) {
         result.add(new TimeIntervalTerm(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), Integer.parseInt(list.get(x + 1)), list.get(x
@@ -388,7 +388,7 @@ public class PatientData {
   */
   public ArrayList<TimeIntervalTerm> getNegatedTermTimeIntervals(final String term) {
     final ArrayList<TimeIntervalTerm> result = new ArrayList<>();
-    final ArrayList<String> list = data.getNegatedTerms().get(term);
+    final List<String> list = data.getNegatedTerms().get(term);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 3) {
         result.add(new TimeIntervalTerm(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), Integer.parseInt(list.get(x + 1)), list.get(x
@@ -406,7 +406,7 @@ public class PatientData {
   */
   public ArrayList<TimeIntervalTerm> getFamilyHistoryTermTimeIntervals(final String term) {
     final ArrayList<TimeIntervalTerm> result = new ArrayList<>();
-    final ArrayList<String> list = data.getFhTerms().get(term);
+    final List<String> list = data.getFhTerms().get(term);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 3) {
         result.add(new TimeIntervalTerm(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x))), Integer.parseInt(list.get(x + 1)), list.get(x
@@ -424,7 +424,7 @@ public class PatientData {
    */
   public ArrayList<TimeIntervalRxNorm> getRxNormTimeIntervals(final String rx) {
     final ArrayList<TimeIntervalRxNorm> result = new ArrayList<>();
-    final ArrayList<String> list = data.getRx().get(rx);
+    final List<String> list = data.getRx().get(rx);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 4) {
         result.add(new TimeIntervalRxNorm(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x + 1))), list.get(x + 2), list.get(x + 3)));
@@ -441,7 +441,7 @@ public class PatientData {
    */
   public ArrayList<TimeInterval> getCptTimeIntervals(final String cpt) {
     final ArrayList<TimeInterval> result = new ArrayList<>();
-    final ArrayList<Integer> list = data.getCpt().get(cpt);
+    final List<Integer> list = data.getCpt().get(cpt);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
         result.add(new TimeInterval(minutesToDays(list.get(x)), minutesToDays(list.get(x + 1))));
@@ -458,7 +458,7 @@ public class PatientData {
    */
   public HashSet<Integer> getAtcRxNorms(final String atc) {
     final HashSet<Integer> result = new HashSet<>();
-    final ArrayList<Integer> list = data.getAtc().get(atc);
+    final List<Integer> list = data.getAtc().get(atc);
     if (list != null) {
       for (int x = 0; x < list.size(); x++) {
         result.add(list.get(x));
@@ -476,7 +476,7 @@ public class PatientData {
    */
   public ArrayList<TimeInterval> getSnomedTimeIntervals(final String snomed) {
     final ArrayList<TimeInterval> result = new ArrayList<>();
-    final ArrayList<Integer> list = data.getSnomed().get(snomed);
+    final List<Integer> list = data.getSnomed().get(snomed);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
         result.add(new TimeInterval(minutesToDays(list.get(x)), minutesToDays(list.get(x + 1))));
@@ -493,7 +493,7 @@ public class PatientData {
    */
   public ArrayList<TimeInterval> getVisitTypeTimeIntervals(final String visitType) {
     final ArrayList<TimeInterval> result = new ArrayList<>();
-    final ArrayList<Integer> list = data.getVisitTypes().get(visitType);
+    final List<Integer> list = data.getVisitTypes().get(visitType);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
         result.add(new TimeInterval(minutesToDays(list.get(x)), minutesToDays(list.get(x + 1))));
@@ -510,7 +510,7 @@ public class PatientData {
    */
   public ArrayList<TimeInterval> getNoteTypeTimeIntervals(final String noteType) {
     final ArrayList<TimeInterval> result = new ArrayList<>();
-    final ArrayList<Integer> list = data.getNoteTypes().get(noteType);
+    final List<Integer> list = data.getNoteTypes().get(noteType);
     if (list != null) {
       for (int x = 0; x < list.size(); x++) {
         result.add(new TimeInterval(minutesToDays(list.get(x)), minutesToDays(list.get(x))));
@@ -524,7 +524,7 @@ public class PatientData {
     data = response;
   }
 
-  private Set<String> getUniqueCodes(final HashMap<String, ?> map) {
+  private Set<String> getUniqueCodes(final Map<String, ?> map) {
     return map != null ? map.keySet() : new HashSet<>();
   }
 

@@ -9,14 +9,14 @@ import com.podalv.search.server.api.responses.DumpResponse;
  */
 public interface CompareUtils {
 
-  static HashMap<Object, ArrayList<Object>> getMissingInLeft(final HashMap<Object, ArrayList<Object>> left, final HashMap<Object, ArrayList<Object>> right) {
-    final HashMap<Object, ArrayList<Object>> result = new HashMap<>();
+  static Map<Object, List<Object>> getMissingInLeft(final Map<Object, List<Object>> left, final Map<Object, List<Object>> right) {
+    final Map<Object, List<Object>> result = new HashMap<>();
     if (left == null && right != null) {
       left.forEach((o, objects) -> result.put(o, objects));
     }
     else if (left != null) {
       left.forEach((key, value) -> {
-        final ArrayList<Object> rightValue = right.get(key);
+        final List<Object> rightValue = right.get(key);
         if (rightValue == null) {
           result.put(key, value);
         }
@@ -25,23 +25,22 @@ public interface CompareUtils {
     return result;
   }
 
-  static HashMap<Object, ArrayList<Object>> getDifferentInLeft(final HashMap<Object, ArrayList<Object>> left, final HashMap<Object, ArrayList<Object>> right,
-      final int numberOfValueColumns) {
-    final HashMap<Object, ArrayList<Object>> result = new HashMap<>();
+  static Map<Object, List<Object>> getDifferentInLeft(final Map<Object, List<Object>> left, final Map<Object, List<Object>> right, final int numberOfValueColumns) {
+    final Map<Object, List<Object>> result = new HashMap<>();
     if (left == null && right != null) {
       left.forEach((o, objects) -> result.put(o, objects));
     }
     else if (left != null) {
       left.forEach((key, value) -> {
-        final ArrayList<Object> rightValue = right.get(key);
+        final List<Object> rightValue = right.get(key);
         if (rightValue != null && !right.get(key).equals(value)) {
-          final HashSet<ArrayList<Object>> rightSingle = extractSingleValue(numberOfValueColumns, rightValue);
-          final HashSet<ArrayList<Object>> leftSingle = extractSingleValue(numberOfValueColumns, value);
+          final Set<List<Object>> rightSingle = extractSingleValue(numberOfValueColumns, rightValue);
+          final Set<List<Object>> leftSingle = extractSingleValue(numberOfValueColumns, value);
           leftSingle.removeAll(rightSingle);
-          final Iterator<ArrayList<Object>> i = leftSingle.iterator();
+          final Iterator<List<Object>> i = leftSingle.iterator();
           final ArrayList<Object> diff = new ArrayList<>();
           while (i.hasNext()) {
-            final ArrayList<Object> val = i.next();
+            final List<Object> val = i.next();
             for (final Object obj : val) {
               diff.add(obj);
             }
@@ -55,8 +54,8 @@ public interface CompareUtils {
     return result;
   }
 
-  static HashSet<ArrayList<Object>> extractSingleValue(final int numberOfValueColumns, final ArrayList<Object> rightValue) {
-    final HashSet<ArrayList<Object>> values = new HashSet<>();
+  static Set<List<Object>> extractSingleValue(final int numberOfValueColumns, final List<Object> rightValue) {
+    final Set<List<Object>> values = new HashSet<>();
     for (int x = 0; x < rightValue.size(); x += numberOfValueColumns) {
       final ArrayList<Object> singleValue = new ArrayList<>();
       for (int y = x; y < x + numberOfValueColumns; y++) {
@@ -67,8 +66,8 @@ public interface CompareUtils {
     return values;
   }
 
-  static ComparisonResult compare(final HashMap<Object, ArrayList<Object>> left, final HashMap<Object, ArrayList<Object>> right, final int numberOfValueColumns) {
-    final ComparisonResult<HashMap<Object, ArrayList<Object>>> result = new ComparisonResult<>();
+  static ComparisonResult compare(final Map<Object, List<Object>> left, final Map<Object, List<Object>> right, final int numberOfValueColumns) {
+    final ComparisonResult<Map<Object, List<Object>>> result = new ComparisonResult<>();
     result.setMissingLeft(getMissingInLeft(left, right));
     result.setMissingRight(getMissingInLeft(right, left));
     result.setDifferentLeft(getDifferentInLeft(left, right, numberOfValueColumns));
@@ -83,8 +82,8 @@ public interface CompareUtils {
     return !Objects.equals(o1, o2) ? prefix : "";
   }
 
-  static String explainDiff(final String prefix, final HashMap o1, final HashMap o2, final int numberOfValueColumns) {
-    final ComparisonResult<HashMap<Object, ArrayList<Object>>> result = compare(o1, o2, numberOfValueColumns);
+  static String explainDiff(final String prefix, final Map o1, final Map o2, final int numberOfValueColumns) {
+    final ComparisonResult<Map<Object, List<Object>>> result = compare(o1, o2, numberOfValueColumns);
     return result instanceof IdenticalComparisonResult ? "" : prefix;
   }
 
