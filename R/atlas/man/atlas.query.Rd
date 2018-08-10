@@ -21,8 +21,8 @@ data frame containing patient IDs and time intervals (optional)
 Queries ATLAS and returns a list of patient IDs
 }
 \examples{
-\donttest{atlas.query(atlas.connection('http://localhost:8080'), 'ICD9=250.50')}
-\donttest{atlas.query(atlas.connection('http://localhost:8080'), 'ICD9=250.50', TRUE)}
+\donttest{atlas.query(atlas.connect('http://localhost:8080'), 'ICD9=250.50')}
+\donttest{atlas.query(atlas.connect('http://localhost:8080'), 'ICD9=250.50', TRUE)}
 
 
 }

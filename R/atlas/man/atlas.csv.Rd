@@ -21,8 +21,8 @@ data frame containing CSV file
 Queries ATLAS with a CSV() command and imports the contents of the csv into a data frame
 }
 \examples{
-\donttest{atlas.csv(atlas.connection('http://localhost:8080'), 'CSV("ICD9=250.50", CPT, LABS, ICD9)')}
-\donttest{atlas.csv(atlas.connection('http://localhost:8080'), 'CSV("ICD9=250.50", CPT, LABS, ICD9)',
+\donttest{atlas.csv(atlas.connect('http://localhost:8080'), 'CSV(ICD9=250.50, CPT, LABS, ICD9)')}
+\donttest{atlas.csv(atlas.connect('http://localhost:8080'), 'CSV(ICD9=250.50, CPT, LABS, ICD9)',
           '/output.csv')}
 
 }

@@ -41,6 +41,7 @@ public class DumpRequest {
     r.setVitals(true);
     r.setNotes(false);
     r.setNoteTypes(true);
+    r.setAtc(true);
     return r;
   }
 

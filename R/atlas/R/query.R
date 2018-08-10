@@ -7,8 +7,8 @@
 #' @return data frame containing patient IDs and time intervals (optional)
 #'
 #' @examples
-#' \donttest{atlas.query(atlas.connection('http://localhost:8080'), 'ICD9=250.50')}
-#' \donttest{atlas.query(atlas.connection('http://localhost:8080'), 'ICD9=250.50', TRUE)}
+#' \donttest{atlas.query(atlas.connect('http://localhost:8080'), 'ICD9=250.50')}
+#' \donttest{atlas.query(atlas.connect('http://localhost:8080'), 'ICD9=250.50', TRUE)}
 #'
 #'
 atlas.query <- function(connection, query, output_time=FALSE) {
@@ -67,14 +67,12 @@ atlas.query <- function(connection, query, output_time=FALSE) {
 #' @return data frame containing CSV file
 #'
 #' @examples
-#' \donttest{atlas.csv(atlas.connection('http://localhost:8080'), 'CSV("ICD9=250.50", CPT, LABS, ICD9)')}
-#' \donttest{atlas.csv(atlas.connection('http://localhost:8080'), 'CSV("ICD9=250.50", CPT, LABS, ICD9)',
+#' \donttest{atlas.csv(atlas.connect('http://localhost:8080'), 'CSV(ICD9=250.50, CPT, LABS, ICD9)')}
+#' \donttest{atlas.csv(atlas.connect('http://localhost:8080'), 'CSV(ICD9=250.50, CPT, LABS, ICD9)',
 #'           '/output.csv')}
-
 #'
 atlas.csv <- function(connection, query, file_name=NULL) {
   request <- paste0('{"query":"', gsub(pattern = '"', replacement = '\\\\"', x = query), '", "returnTimeIntervals": false}')
-  print(request)
   response <- httr::POST(url = paste0(connection$url,'/query'), body = request)
   json_response <- httr::content(response, type="application/json")
   if (is.null(file_name)) {
