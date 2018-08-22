@@ -24,15 +24,14 @@ public class PatientComparator {
     final int maxPatientCnt = Integer.parseInt(args[0]);
 
     final LinkedList<Integer> pids = atlas1.getPatientIds(maxPatientCnt);
+
     for (final Integer pid : pids) {
       if (atlas1.containsPatient(pid) && atlas2.containsPatient(pid)) {
         final DumpResponse p1 = atlas1.getPatientDumpResponse(pid);
         final DumpResponse p2 = atlas2.getPatientDumpResponse(pid);
-        if (!p1.equals(p2)) {
-          System.out.println(pid + " = " + CompareUtils.explain(p1, p2));
-        }
-        else {
-          System.out.println("SAME for " + pid);
+        final String comp = CompareUtils.explain(p1, p2);
+        if (!comp.isEmpty()) {
+          System.out.println(pid + " = " + comp);
         }
       }
     }

@@ -12,13 +12,18 @@ public interface CompareUtils {
   static Map<Object, List<Object>> getMissingInLeft(final Map<Object, List<Object>> left, final Map<Object, List<Object>> right) {
     final Map<Object, List<Object>> result = new HashMap<>();
     if (left == null && right != null) {
-      left.forEach((o, objects) -> result.put(o, objects));
+      right.forEach((o, objects) -> result.put(o, objects));
     }
     else if (left != null) {
       left.forEach((key, value) -> {
-        final List<Object> rightValue = right.get(key);
-        if (rightValue == null) {
+        if (right == null) {
           result.put(key, value);
+        }
+        else {
+          final List<Object> rightValue = right.get(key);
+          if (rightValue == null) {
+            result.put(key, value);
+          }
         }
       });
     }
@@ -28,9 +33,9 @@ public interface CompareUtils {
   static Map<Object, List<Object>> getDifferentInLeft(final Map<Object, List<Object>> left, final Map<Object, List<Object>> right, final int numberOfValueColumns) {
     final Map<Object, List<Object>> result = new HashMap<>();
     if (left == null && right != null) {
-      left.forEach((o, objects) -> result.put(o, objects));
+      right.forEach((o, objects) -> result.put(o, objects));
     }
-    else if (left != null) {
+    else if (left != null && right != null) {
       left.forEach((key, value) -> {
         final List<Object> rightValue = right.get(key);
         if (rightValue != null && !right.get(key).equals(value)) {
@@ -82,6 +87,26 @@ public interface CompareUtils {
     return !Objects.equals(o1, o2) ? prefix : "";
   }
 
+  static String explainYears(final String prefix, final Map<Integer, List<Integer>> o1, final Map<Integer, List<Integer>> o2) {
+    if (o1.size() != o2.size()) {
+      return prefix;
+    }
+    final Iterator<Map.Entry<Integer, List<Integer>>> iterator = o1.entrySet().iterator();
+    while (iterator.hasNext()) {
+      final Map.Entry<Integer, List<Integer>> entry = iterator.next();
+      final List<Integer> list2 = o2.get(entry.getKey());
+      if (entry.getValue().size() != list2.size()) {
+        return prefix;
+      }
+      for (int x = 0; x < list2.size(); x++) {
+        if (Math.abs(list2.get(x) - entry.getValue().get(x)) > 1) {
+          return prefix;
+        }
+      }
+    }
+    return "";
+  }
+
   static String explainDiff(final String prefix, final Map o1, final Map o2, final int numberOfValueColumns) {
     final ComparisonResult<Map<Object, List<Object>>> result = compare(o1, o2, numberOfValueColumns);
     return result instanceof IdenticalComparisonResult ? "" : prefix;
@@ -114,6 +139,6 @@ public interface CompareUtils {
         explainDiff("VIT ", patient1.getVitals(), patient2.getVitals(), 2) + //          
         explainDiff("ENC ", patient1.getEncounterDays(), patient2.getEncounterDays()) + //
         explainDiff("AGE ", patient1.getAgeRanges(), patient2.getAgeRanges()) + //
-        explainDiff("YR ", patient1.getYearRanges(), patient2.getYearRanges());
+        explainYears("YR ", patient1.getYearRanges(), patient2.getYearRanges());
   }
 }
