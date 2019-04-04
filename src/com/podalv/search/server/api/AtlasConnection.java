@@ -113,7 +113,7 @@ public class AtlasConnection {
     int cnt = 0;
     for (int x = 0; x < data.length; x++) {
       try {
-        Integer.parseInt(data[x]);
+        Long.parseLong(data[x]);
         cnt++;
       }
       catch (final Exception e) {
@@ -183,7 +183,7 @@ public class AtlasConnection {
    * @throws IOException
    * @throws QueryException
    */
-  public PatientData getPatient(final int patientId) throws JsonSyntaxException, IOException, QueryException {
+  public PatientData getPatient(final long patientId) throws JsonSyntaxException, IOException, QueryException {
     final DumpRequest request = DumpRequest.createFull(patientId);
     final DumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), 0), DumpResponse.class);
     return PatientData.create(response);
@@ -197,7 +197,7 @@ public class AtlasConnection {
   * @throws IOException
   * @throws QueryException
   */
-  public DumpResponse getPatientDumpResponse(final int patientId) throws JsonSyntaxException, IOException, QueryException {
+  public DumpResponse getPatientDumpResponse(final long patientId) throws JsonSyntaxException, IOException, QueryException {
     final DumpRequest request = DumpRequest.createFull(patientId);
     return new Gson().fromJson(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), 0), DumpResponse.class);
   }
@@ -210,7 +210,7 @@ public class AtlasConnection {
   * @throws IOException
   * @throws QueryException
   */
-  public void getPatient(final int patientId, final BufferedWriter stream) throws JsonSyntaxException, IOException, QueryException {
+  public void getPatient(final long patientId, final BufferedWriter stream) throws JsonSyntaxException, IOException, QueryException {
     final DumpRequest request = DumpRequest.createFull(patientId);
     stream.write(QueryUtils.query(url + "/" + DUMP_QUERY, new Gson().toJson(request), 0));
   }
@@ -226,7 +226,7 @@ public class AtlasConnection {
   * @throws IOException
   * @throws QueryException
   */
-  public PatientData getPatient(final int patientId, final String selectionQuery, final boolean containsStart, final boolean containsEnd) throws JsonSyntaxException, IOException,
+  public PatientData getPatient(final long patientId, final String selectionQuery, final boolean containsStart, final boolean containsEnd) throws JsonSyntaxException, IOException,
       QueryException {
     final DumpRequest request = DumpRequest.createFull(patientId);
     request.setQuery(selectionQuery, containsStart, containsEnd);
@@ -334,14 +334,14 @@ public class AtlasConnection {
    * 
    * @return list of all patients in the dataset
    */
-  public LinkedList<Integer> getPatientIds(final int maxPatientCnt) throws IOException {
-    final LinkedList<Integer> result = new LinkedList<>();
+  public LinkedList<Long> getPatientIds(final int maxPatientCnt) throws IOException {
+    final LinkedList<Long> result = new LinkedList<>();
 
     QueryUtils.query(url + "/" + PATIENT_LIST, "", 0, new Predicate<String>() {
 
       @Override
       public boolean test(final String s) {
-        result.add(Integer.parseInt(s));
+        result.add(Long.parseLong(s));
         return result.size() < maxPatientCnt;
       }
 
@@ -356,7 +356,7 @@ public class AtlasConnection {
    * @throws JsonSyntaxException
    * @throws IOException
    */
-  public boolean containsPatient(final int patientId) throws JsonSyntaxException, IOException {
+  public boolean containsPatient(final long patientId) throws JsonSyntaxException, IOException {
     final BooleanResponse response = new Gson().fromJson(QueryUtils.query(url + "/" + CONTAINS_PATIENT_QUERY, new Gson().toJson(new ContainsPatientRequest(patientId)), 0),
         BooleanResponse.class);
     return response.getResponse();
