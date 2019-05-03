@@ -2,7 +2,13 @@ package com.podalv.search.server.api.responses;
 
 public class BooleanResponse {
 
-  private boolean response;
+  private Boolean response;
+  private String  error;
+
+  public BooleanResponse(final String error) {
+    this.error = error;
+    response = null;
+  }
 
   public BooleanResponse(final boolean response) {
     this.response = response;
@@ -13,7 +19,14 @@ public class BooleanResponse {
   }
 
   public boolean getResponse() {
-    return this.response;
+    return response;
   }
 
+  public String getError() {
+    return error;
+  }
+
+  public void setError(final String error) {
+    this.error = error;
+  }
 }
