@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CustomDumpRequest {
 
+  public static String                            DEFAULT_COLUMN_SEPARATOR = "\t";
+  public static String                            DEFAULT_ROW_SEPARATOR    = "\n";
+  public static String                            DEFAULT_QUOTE            = "";
   @JsonProperty("patientIds") private long[]      patientIds;
   @JsonProperty("header") private String[]        header;
   @JsonProperty("columns") private String[]       columns;
@@ -20,15 +23,15 @@ public class CustomDumpRequest {
   }
 
   public String getColumnSeparator() {
-    return columnSeparator;
+    return columnSeparator == null ? DEFAULT_COLUMN_SEPARATOR : columnSeparator;
   }
 
   public String getRowSeparator() {
-    return rowSeparator;
+    return rowSeparator == null ? DEFAULT_ROW_SEPARATOR : rowSeparator;
   }
 
   public String getQuote() {
-    return quote;
+    return quote == null ? DEFAULT_QUOTE : quote;
   }
 
   public String[] getHeader() {

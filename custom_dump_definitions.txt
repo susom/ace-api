@@ -1,0 +1,7 @@
+icd9.txt	pid=PID	icd9=ICD9	time=START
+cpt.txt	pid=PID	cpt=CPT	time=START
+demographics.txt	pid=PID	gender=GENDER	race=RACE	ethnicity=ETHNICITY	recordStart=RECORD_START	recordEnd=RECORD_END
+encounters.txt	pid=PID	type=VISIT_TYPE	startTime=START	endTime=END
+labs.txt	pid=PID	labName=LABS	time=START	value=VALUE
+rx.txt	pid=PID	rxcui=RX	rxStart=START	rxEnd=END	route=ROUTE	status=STATUS
+vitals.txt	pid=PID	vitalName=VITALS	time=START	value=VALUE

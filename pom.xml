@@ -3,7 +3,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.podalv</groupId>
     <artifactId>AtlasAPI</artifactId>
-    <version>2.5</version>
+    <version>2.7</version>
     <dependencies>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -44,7 +44,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
         <outputDirectory>target/classes</outputDirectory>
         <testOutputDirectory>target/test-classes</testOutputDirectory>
         <directory>target</directory>
-        <finalName>atlas_api</finalName>
+        <finalName>utils</finalName>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -53,7 +53,31 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.2-beta-5</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                <!-- <mainClass>com.podalv.search.server.Atlas</mainClass> -->
+                                <mainClass>com.podalv.search.server.api.CustomDumpDownloader</mainClass>
+                                <!--<mainClass>com.podalv.extractor.stride6.Stride6Extractor</mainClass> -->
+                            </manifest>
+                        </archive>
+                        <descriptorRefs>
+                            <descriptorRef>jar-with-dependencies</descriptorRef>
+                        </descriptorRefs>
+                        <finalName>custom_dump</finalName>
+                        <!-- <finalName>stride6extractor</finalName> -->
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>make-assembly</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <artifactId>maven-dependency-plugin</artifactId>
@@ -102,6 +126,17 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                            <mainClass>com.podalv.Test020</mainClass>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>libs/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                </configuration>
                 <executions>
                     <execution>
                         <id>default-jar</id>
@@ -139,6 +174,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.12.4</version>
+                <configuration>
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>default-test</id>
