@@ -11,6 +11,7 @@ public class PatientSearchRequest {
   @JsonProperty("query") String                        query;
   @JsonProperty("returnPids") private boolean          returnPids          = true;
   @JsonProperty("returnTimeIntervals") private boolean returnTimeIntervals = false;
+  @JsonProperty("returnYears") private boolean         returnYears         = false;
   @JsonProperty("returnSurvivalData") private boolean  returnSurvivalData  = false;
   @JsonProperty("pidCntLimit") private int             pidCntLimit         = Integer.MAX_VALUE;
   @JsonProperty("checkStatus") private boolean         checkStatus         = false;
@@ -41,6 +42,15 @@ public class PatientSearchRequest {
 
   public PatientSearchRequest setDurationBuckets(final int[] durationBuckets) {
     this.durationBuckets = durationBuckets;
+    return this;
+  }
+
+  public boolean isReturnYears() {
+    return returnYears;
+  }
+
+  public PatientSearchRequest setReturnYears(final boolean value) {
+    returnYears = value;
     return this;
   }
 
@@ -134,6 +144,7 @@ public class PatientSearchRequest {
     response.statisticsLimit = originalRequest.statisticsLimit;
     response.pidCntLimit = originalRequest.pidCntLimit;
     response.binary = originalRequest.binary;
+    response.returnYears = originalRequest.returnYears;
     if (originalRequest.durationBuckets != null) {
       response.durationBuckets = Arrays.copyOf(originalRequest.durationBuckets, originalRequest.durationBuckets.length);
     }
@@ -155,7 +166,8 @@ public class PatientSearchRequest {
   public boolean equals(final Object obj) {
     if (obj != null && obj instanceof PatientSearchRequest) {
       final PatientSearchRequest req = (PatientSearchRequest) obj;
-      return Objects.equals(query, req.query) && req.returnPids == returnPids && req.returnTimeIntervals == returnTimeIntervals && req.pidCntLimit == pidCntLimit;
+      return Objects.equals(query, req.query) && req.returnYears == returnYears && req.returnPids == returnPids && req.returnTimeIntervals == returnTimeIntervals
+          && req.pidCntLimit == pidCntLimit;
     }
     return false;
   }
