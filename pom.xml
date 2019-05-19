@@ -59,14 +59,14 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                                 <!-- <mainClass>com.podalv.search.server.Atlas</mainClass> -->
-                                <mainClass>com.podalv.search.server.api.CustomDumpDownloader</mainClass>
+                                <mainClass>com.podalv.search.server.api.MultipleQueryRunner</mainClass>
                                 <!--<mainClass>com.podalv.extractor.stride6.Stride6Extractor</mainClass> -->
                             </manifest>
                         </archive>
                         <descriptorRefs>
                             <descriptorRef>jar-with-dependencies</descriptorRef>
                         </descriptorRefs>
-                        <finalName>custom_dump</finalName>
+                        <finalName>query_runner</finalName>
                         <!-- <finalName>stride6extractor</finalName> -->
                     </configuration>
                     <executions>
