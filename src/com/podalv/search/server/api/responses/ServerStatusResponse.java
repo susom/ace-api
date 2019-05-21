@@ -7,9 +7,18 @@ public class ServerStatusResponse {
   private final String        datasetVersion;
   private final String        version;
   private boolean             workshop;
+  private String              ipAddress   = null;
 
   public static ServerStatusResponse createOkResponse(final String version, final boolean workshop, final String datasetVersion) {
     return new ServerStatusResponse(version, OK_RESPONSE, workshop, datasetVersion);
+  }
+
+  public void setIpAddress(final String ipAddress) {
+    this.ipAddress = ipAddress;
+  }
+
+  public String getIpAddress() {
+    return ipAddress;
   }
 
   public ServerStatusResponse(final String version, final String status, final boolean workshop, final String dataSetVersion) {
