@@ -11,18 +11,18 @@ import com.podalv.search.server.api.timeintervals.TimeInterval;
  */
 public class PatientId {
 
-  private final int                      patientId;
+  private final long                     patientId;
   private final LinkedList<TimeInterval> startEndIntervals = new LinkedList<>();
 
-  public PatientId(final int patientId) {
+  public PatientId(final long patientId) {
     this.patientId = patientId;
   }
 
   public void addStartEndInterval(final TimeInterval ti) {
-    this.startEndIntervals.add(ti);
+    startEndIntervals.add(ti);
   }
 
-  public int getPatientId() {
+  public long getPatientId() {
     return patientId;
   }
 
@@ -37,7 +37,7 @@ public class PatientId {
 
   @Override
   public int hashCode() {
-    return patientId;
+    return Long.hashCode(patientId);
   }
 
 }

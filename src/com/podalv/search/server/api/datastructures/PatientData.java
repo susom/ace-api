@@ -339,7 +339,7 @@ public class PatientData {
     final List<Integer> list = data.getYearRanges().get(year);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 2) {
-        result.add(new TimeInterval(minutesToDays(list.get(x)), minutesToDays(list.get(x + 1))));
+        result.add(new TimeInterval(list.get(x), list.get(x + 1)));
       }
     }
     Collections.sort(result);

@@ -13,8 +13,9 @@ public class ServerStatusResponse {
     return new ServerStatusResponse(version, OK_RESPONSE, workshop, datasetVersion);
   }
 
-  public void setIpAddress(final String ipAddress) {
+  public ServerStatusResponse setIpAddress(final String ipAddress) {
     this.ipAddress = ipAddress;
+    return this;
   }
 
   public String getIpAddress() {

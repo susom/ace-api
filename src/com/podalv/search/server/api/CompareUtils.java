@@ -126,7 +126,7 @@ public interface CompareUtils {
         explainDiff("ERR ", patient1.getError(), patient2.getError()) + //
         explainDiff("ICD9 ", patient1.getIcd9(), patient2.getIcd9(), 3) + //
         explainDiff("CPT ", patient1.getCpt(), patient2.getCpt(), 2) + //
-        explainDiff("RX ", patient1.getRx(), patient2.getRx(), 3) + //
+        explainDiff("RX ", patient1.getRx(), patient2.getRx(), 2) + //
         explainDiff("SNOMED ", patient1.getSnomed(), patient2.getSnomed(), 2) + //
         explainDiff("NEGT ", patient1.getNegatedTerms(), patient2.getNegatedTerms(), 2) + //
         explainDiff("FAMT ", patient1.getFhTerms(), patient2.getFhTerms(), 2) + //
