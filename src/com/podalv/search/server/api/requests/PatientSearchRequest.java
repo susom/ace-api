@@ -18,8 +18,8 @@ public class PatientSearchRequest {
   @JsonProperty("statisticsLimit") private int         statisticsLimit     = Integer.MAX_VALUE;
   @JsonProperty("encounterBuckets") private int[]      encounterBuckets;
   @JsonProperty("durationBuckets") private int[]       durationBuckets;
-  @JsonProperty("binary") private boolean              binary              = false;
   @JsonProperty("searchablePids") private long[]       searchablePids;
+  @JsonProperty("compress") private boolean            compress            = false;
 
   public static PatientSearchRequest create(final String query) {
     final PatientSearchRequest result = new PatientSearchRequest();
@@ -54,20 +54,20 @@ public class PatientSearchRequest {
     return this;
   }
 
+  public void setCompress(boolean value) {
+    this.compress = value;
+  }
+
+  public boolean isCompress() {
+    return this.compress;
+  }
+
   public int[] getDurationBuckets() {
     return durationBuckets;
   }
 
   public int[] getEncounterBuckets() {
     return encounterBuckets;
-  }
-
-  public void setBinary(final boolean binary) {
-    this.binary = binary;
-  }
-
-  public boolean isBinarySearchRequest() {
-    return binary;
   }
 
   public void setStatisticsLimit(final int statisticsLimit) {
@@ -127,10 +127,6 @@ public class PatientSearchRequest {
     return false;
   }
 
-  public boolean isBinaryPidRequest() {
-    return binary;
-  }
-
   public void setQuery(final String query) {
     this.query = query;
   }
@@ -143,7 +139,6 @@ public class PatientSearchRequest {
     response.returnSurvivalData = originalRequest.returnSurvivalData;
     response.statisticsLimit = originalRequest.statisticsLimit;
     response.pidCntLimit = originalRequest.pidCntLimit;
-    response.binary = originalRequest.binary;
     response.returnYears = originalRequest.returnYears;
     if (originalRequest.durationBuckets != null) {
       response.durationBuckets = Arrays.copyOf(originalRequest.durationBuckets, originalRequest.durationBuckets.length);

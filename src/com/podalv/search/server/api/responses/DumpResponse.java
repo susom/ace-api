@@ -1,6 +1,5 @@
 package com.podalv.search.server.api.responses;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author podalv
  *
  */
-public class DumpResponse extends SerializableResponse {
+public class DumpResponse {
 
   @JsonProperty("patientId") private final long                    patientId;
   @JsonProperty("recordStart") private int                         recordStart;
@@ -279,13 +278,6 @@ public class DumpResponse extends SerializableResponse {
 
   public String getError() {
     return error;
-  }
-
-  @Override
-  public void close() throws IOException {
-    if (binaryResponse) {
-      throw new UnsupportedOperationException();
-    }
   }
 
 }

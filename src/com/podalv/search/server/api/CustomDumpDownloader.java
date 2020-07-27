@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import com.google.gson.Gson;
 import com.podalv.search.server.api.requests.CustomDumpRequest;
-import com.podalv.search.server.api.requests.CustomDumpResponse;
+import com.podalv.search.server.api.responses.BooleanResponse;
 
 /** Queries ATLAS /custom_dump endpoint and generates files based on specs
  * 
@@ -63,7 +63,8 @@ public class CustomDumpDownloader {
       request.setHeader(definitions.get(x).getColumns().toArray(new String[0]));
       System.out.println("Querying " + pids.length + " patients");
       long time = System.currentTimeMillis();
-      final CustomDumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/custom_dump", new Gson().toJson(request), Integer.MAX_VALUE), CustomDumpResponse.class);
+      final BooleanResponse.CustomDumpResponse response = new Gson().fromJson(QueryUtils.query(url + "/custom_dump", new Gson().toJson(request), Integer.MAX_VALUE),
+          BooleanResponse.CustomDumpResponse.class);
       queryTime += (System.currentTimeMillis() - time);
       System.out.println("Finished. Errors = " + ((response.getError() == null || response.getResult().equalsIgnoreCase("null")) ? "NO" : response.getError()));
       System.out.println("Downloading to file " + definitions.get(x).fileName);

@@ -61,7 +61,6 @@ public class AtlasConnection {
   public Iterator<PatientId> getPatientIds(final String query) throws JsonSyntaxException, IOException, QueryException {
     final PatientSearchRequest request = new PatientSearchRequest();
     request.setQuery(query);
-    request.setBinary(false);
     request.setPidCntLimit(Integer.MAX_VALUE);
     request.setReturnPids(true);
     request.setReturnSurvivalData(false);
@@ -102,7 +101,6 @@ public class AtlasConnection {
   public int getPatientCnt(final String query) throws JsonSyntaxException, IOException, QueryException {
     final PatientSearchRequest request = new PatientSearchRequest();
     request.setQuery(query);
-    request.setBinary(false);
     request.setPidCntLimit(Integer.MAX_VALUE);
     request.setReturnPids(true);
     request.setReturnSurvivalData(false);
@@ -134,7 +132,6 @@ public class AtlasConnection {
   public String getParsedQuery(final String query) throws JsonSyntaxException, IOException, QueryException {
     final PatientSearchRequest request = new PatientSearchRequest();
     request.setQuery(query);
-    request.setBinary(false);
     request.setPidCntLimit(Integer.MAX_VALUE);
     request.setReturnPids(true);
     request.setReturnSurvivalData(false);
@@ -158,7 +155,6 @@ public class AtlasConnection {
   public void getFile(final String query, final File outputFile) throws JsonSyntaxException, IOException, QueryException {
     final PatientSearchRequest request = new PatientSearchRequest();
     request.setQuery(query);
-    request.setBinary(false);
     request.setPidCntLimit(Integer.MAX_VALUE);
     request.setReturnPids(true);
     request.setReturnSurvivalData(false);

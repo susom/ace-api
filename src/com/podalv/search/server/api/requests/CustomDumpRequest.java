@@ -13,6 +13,7 @@ public class CustomDumpRequest {
   @JsonProperty("columnSeparator") private String columnSeparator;
   @JsonProperty("rowSeparator") private String    rowSeparator;
   @JsonProperty("quote") private String           quote;
+  @JsonProperty("compress") private boolean       compress;
 
   public String[] getColumns() {
     return columns;
@@ -20,6 +21,14 @@ public class CustomDumpRequest {
 
   public long[] getPatientIds() {
     return patientIds;
+  }
+
+  public boolean isCompress() {
+    return compress;
+  }
+
+  public void setCompress(boolean compress) {
+    this.compress = compress;
   }
 
   public String getColumnSeparator() {

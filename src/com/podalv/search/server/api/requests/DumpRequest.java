@@ -28,6 +28,7 @@ public class DumpRequest {
   @JsonProperty("selectionQuery") private String selectionQuery;
   @JsonProperty("containsStart") private boolean containsStart;
   @JsonProperty("containsEnd") private boolean   containsEnd;
+  @JsonProperty("compress") private boolean      compress;
 
   public static DumpRequest createWorkshopRequest(final long patientId) {
     final DumpRequest r = new DumpRequest(patientId);
@@ -161,6 +162,14 @@ public class DumpRequest {
 
   public boolean isContainsStart() {
     return containsStart;
+  }
+
+  public boolean isCompress() {
+    return compress;
+  }
+
+  public void setCompress(boolean value) {
+    this.compress = value;
   }
 
   public boolean isNotes() {

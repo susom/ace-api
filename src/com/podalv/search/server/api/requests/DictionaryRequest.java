@@ -4,12 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class DictionaryRequest {
 
-  @JsonProperty("cpt") private String[]    cpt;
-  @JsonProperty("icd9") private String[]   icd9;
-  @JsonProperty("icd10") private String[]  icd10;
-  @JsonProperty("atc") private String[]    atc;
-  @JsonProperty("labs") private String[]   labs;
-  @JsonProperty("rxNorm") private String[] rxNorm;
+  @JsonProperty("cpt") private String[]     cpt;
+  @JsonProperty("icd9") private String[]    icd9;
+  @JsonProperty("icd10") private String[]   icd10;
+  @JsonProperty("atc") private String[]     atc;
+  @JsonProperty("labs") private String[]    labs;
+  @JsonProperty("rxNorm") private String[]  rxNorm;
+  @JsonProperty("compress") private boolean compress;
 
   public String[] getAtc() {
     return atc;
@@ -33,6 +34,10 @@ public class DictionaryRequest {
 
   public String[] getRxNorm() {
     return rxNorm;
+  }
+
+  public boolean isCompress() {
+    return compress;
   }
 
   public void setAtc(final String[] atc) {
@@ -59,4 +64,7 @@ public class DictionaryRequest {
     this.rxNorm = rxNorm;
   }
 
+  public void setCompress(boolean compress) {
+    this.compress = compress;
+  }
 }
