@@ -34,11 +34,20 @@ public class BooleanResponse {
 
   public static class CustomDumpResponse {
 
-    @JsonProperty("error") private String  error;
-    @JsonProperty("result") private String result;
+    @JsonProperty("compressFile") private boolean compressFile = false;
+    @JsonProperty("error") private String         error;
+    @JsonProperty("result") private String        result;
 
     public void setError(final String error) {
       this.error = error;
+    }
+
+    public boolean isCompressFile() {
+      return compressFile;
+    }
+
+    public void setCompressFile(final boolean compressFile) {
+      this.compressFile = compressFile;
     }
 
     public void setResult(final String result) {

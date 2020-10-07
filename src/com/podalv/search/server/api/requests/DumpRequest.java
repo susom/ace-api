@@ -8,7 +8,7 @@ import com.google.gson.Gson;
  * @author podalv
  *
  */
-public class DumpRequest {
+public class DumpRequest implements RequestCompression {
 
   @JsonProperty("patientId") private final Long  patientId;
   @JsonProperty("icd9") private boolean          icd9;
@@ -164,12 +164,9 @@ public class DumpRequest {
     return containsStart;
   }
 
-  public boolean isCompress() {
-    return compress;
-  }
-
-  public void setCompress(boolean value) {
-    this.compress = value;
+  public DumpRequest setCompress(final boolean value) {
+    compress = value;
+    return this;
   }
 
   public boolean isNotes() {
@@ -249,4 +246,8 @@ public class DumpRequest {
     System.out.println(new Gson().toJson(req));
   }
 
+  @Override
+  public boolean compressResponse() {
+    return compress;
+  }
 }

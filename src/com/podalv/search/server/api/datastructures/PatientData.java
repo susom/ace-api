@@ -55,7 +55,7 @@ public class PatientData {
     return new PatientData(response);
   }
 
-  /** Returns time intervals with additional data about primary icd9 codes for the specified icd9 code
+  /** Returns time intervals with additional data about icd9 codes for the specified icd9 code
    *
    * @param icd9
    * @return
@@ -63,6 +63,23 @@ public class PatientData {
   public ArrayList<TimeIntervalIcd9> getIcd9TimeIntervals(final String icd9) {
     final ArrayList<TimeIntervalIcd9> result = new ArrayList<>();
     final List<String> list = data.getIcd9().get(icd9);
+    if (list != null) {
+      for (int x = 0; x < list.size(); x += 3) {
+        result.add(new TimeIntervalIcd9(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x + 1))), list.get(x + 2)));
+      }
+    }
+    Collections.sort(result);
+    return result;
+  }
+
+  /** Returns time intervals with additional data about icd10 codes for the specified icd10 code
+   *
+   * @param icd10
+   * @return
+   */
+  public ArrayList<TimeIntervalIcd9> getIcd10TimeIntervals(final String icd10) {
+    final ArrayList<TimeIntervalIcd9> result = new ArrayList<>();
+    final List<String> list = data.getIcd10().get(icd10);
     if (list != null) {
       for (int x = 0; x < list.size(); x += 3) {
         result.add(new TimeIntervalIcd9(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x + 1))), list.get(x + 2)));
@@ -451,6 +468,23 @@ public class PatientData {
     return result;
   }
 
+  /** For DEPARTMENT code returns all time intervals when the DEPARTMENT was indicated
+   *
+   * @param department
+   * @return
+   */
+  public ArrayList<TimeInterval> getDepartmentTimeIntervals(final String department) {
+    final ArrayList<TimeInterval> result = new ArrayList<>();
+    final List<Integer> list = data.getDepartments().get(department);
+    if (list != null) {
+      for (int x = 0; x < list.size(); x += 2) {
+        result.add(new TimeInterval(minutesToDays(list.get(x)), minutesToDays(list.get(x + 1))));
+      }
+    }
+    Collections.sort(result);
+    return result;
+  }
+
   /** Returns a list of RxNorms assigned to the specified ATC code
    *
    * @param atc
@@ -660,6 +694,14 @@ public class PatientData {
     return getUniqueCodes(data.getIcd9());
   }
 
+  /** Returns a list of unique ICD9 codes for the patient
+   *
+   * @return
+   */
+  public Set<String> getUniqueIcd10Codes() {
+    return getUniqueCodes(data.getIcd10());
+  }
+
   /** Returns a list of unique CPT codes for the patient
    *
    * @return
@@ -674,6 +716,14 @@ public class PatientData {
    */
   public Set<String> getUniqueRxNormCodes() {
     return getUniqueCodes(data.getRx());
+  }
+
+  /** Returns a list of unique department codes for the patient
+   *
+   * @return
+   */
+  public Set<String> getUniqueDepartmentCodes() {
+    return getUniqueCodes(data.getDepartments());
   }
 
   /** Returns a list of unique SNOMED codes for the patient

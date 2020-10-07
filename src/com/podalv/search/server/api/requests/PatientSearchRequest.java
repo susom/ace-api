@@ -6,7 +6,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 
-public class PatientSearchRequest {
+public class PatientSearchRequest implements RequestCompression {
 
   @JsonProperty("query") String                        query;
   @JsonProperty("returnPids") private boolean          returnPids          = true;
@@ -20,6 +20,7 @@ public class PatientSearchRequest {
   @JsonProperty("durationBuckets") private int[]       durationBuckets;
   @JsonProperty("searchablePids") private long[]       searchablePids;
   @JsonProperty("compress") private boolean            compress            = false;
+  @JsonProperty("compressFile") private boolean        compressFile        = false;
 
   public static PatientSearchRequest create(final String query) {
     final PatientSearchRequest result = new PatientSearchRequest();
@@ -45,6 +46,11 @@ public class PatientSearchRequest {
     return this;
   }
 
+  public PatientSearchRequest setCompressFile(final boolean compressFile) {
+    this.compressFile = compressFile;
+    return this;
+  }
+
   public boolean isReturnYears() {
     return returnYears;
   }
@@ -54,12 +60,9 @@ public class PatientSearchRequest {
     return this;
   }
 
-  public void setCompress(boolean value) {
-    this.compress = value;
-  }
-
-  public boolean isCompress() {
-    return this.compress;
+  public PatientSearchRequest setCompress(final boolean value) {
+    compress = value;
+    return this;
   }
 
   public int[] getDurationBuckets() {
@@ -132,24 +135,26 @@ public class PatientSearchRequest {
   }
 
   public static PatientSearchRequest copy(final PatientSearchRequest originalRequest, final String newQueryText) {
-    final PatientSearchRequest response = new PatientSearchRequest();
-    response.query = newQueryText;
-    response.returnPids = originalRequest.returnPids;
-    response.returnTimeIntervals = originalRequest.returnTimeIntervals;
-    response.returnSurvivalData = originalRequest.returnSurvivalData;
-    response.statisticsLimit = originalRequest.statisticsLimit;
-    response.pidCntLimit = originalRequest.pidCntLimit;
-    response.returnYears = originalRequest.returnYears;
+    final PatientSearchRequest result = new PatientSearchRequest();
+    result.query = newQueryText;
+    result.returnPids = originalRequest.returnPids;
+    result.returnTimeIntervals = originalRequest.returnTimeIntervals;
+    result.returnSurvivalData = originalRequest.returnSurvivalData;
+    result.statisticsLimit = originalRequest.statisticsLimit;
+    result.pidCntLimit = originalRequest.pidCntLimit;
+    result.returnYears = originalRequest.returnYears;
+    result.compressFile = originalRequest.compressFile;
+    result.compress = originalRequest.compress;
     if (originalRequest.durationBuckets != null) {
-      response.durationBuckets = Arrays.copyOf(originalRequest.durationBuckets, originalRequest.durationBuckets.length);
+      result.durationBuckets = Arrays.copyOf(originalRequest.durationBuckets, originalRequest.durationBuckets.length);
     }
     if (originalRequest.encounterBuckets != null) {
-      response.encounterBuckets = Arrays.copyOf(originalRequest.encounterBuckets, originalRequest.encounterBuckets.length);
+      result.encounterBuckets = Arrays.copyOf(originalRequest.encounterBuckets, originalRequest.encounterBuckets.length);
     }
     if (originalRequest.searchablePids != null) {
-      response.searchablePids = Arrays.copyOf(originalRequest.searchablePids, originalRequest.searchablePids.length);
+      result.searchablePids = Arrays.copyOf(originalRequest.searchablePids, originalRequest.searchablePids.length);
     }
-    return response;
+    return result;
   }
 
   @Override
@@ -172,4 +177,19 @@ public class PatientSearchRequest {
     return new Gson().toJson(this);
   }
 
+  @Override
+  public boolean compressResponse() {
+    return compress;
+  }
+
+  public boolean isCompressFile() {
+    return compressFile;
+  }
+
+  public static void main(final String[] args) {
+    final PatientSearchRequest request = new PatientSearchRequest();
+    request.setQuery("ICD9=\"222\"");
+    request.setCompress(true);
+    System.out.println(new Gson().toJson(request));
+  }
 }

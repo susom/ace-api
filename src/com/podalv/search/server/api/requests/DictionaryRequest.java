@@ -2,7 +2,7 @@ package com.podalv.search.server.api.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class DictionaryRequest {
+public class DictionaryRequest implements RequestCompression {
 
   @JsonProperty("cpt") private String[]     cpt;
   @JsonProperty("icd9") private String[]    icd9;
@@ -36,10 +36,6 @@ public class DictionaryRequest {
     return rxNorm;
   }
 
-  public boolean isCompress() {
-    return compress;
-  }
-
   public void setAtc(final String[] atc) {
     this.atc = atc;
   }
@@ -64,7 +60,13 @@ public class DictionaryRequest {
     this.rxNorm = rxNorm;
   }
 
-  public void setCompress(boolean compress) {
+  public DictionaryRequest setCompress(final boolean compress) {
     this.compress = compress;
+    return this;
+  }
+
+  @Override
+  public boolean compressResponse() {
+    return compress;
   }
 }

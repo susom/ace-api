@@ -1,6 +1,7 @@
 package com.podalv.search.server.api.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.Gson;
 
 public class CustomDumpRequest {
 
@@ -13,7 +14,7 @@ public class CustomDumpRequest {
   @JsonProperty("columnSeparator") private String columnSeparator;
   @JsonProperty("rowSeparator") private String    rowSeparator;
   @JsonProperty("quote") private String           quote;
-  @JsonProperty("compress") private boolean       compress;
+  @JsonProperty("compressFile") private boolean   compressFile             = false;
 
   public String[] getColumns() {
     return columns;
@@ -23,12 +24,9 @@ public class CustomDumpRequest {
     return patientIds;
   }
 
-  public boolean isCompress() {
-    return compress;
-  }
-
-  public void setCompress(boolean compress) {
-    this.compress = compress;
+  public CustomDumpRequest setCompressFile(final boolean compress) {
+    compressFile = compress;
+    return this;
   }
 
   public String getColumnSeparator() {
@@ -69,5 +67,17 @@ public class CustomDumpRequest {
 
   public void setQuote(final String quote) {
     this.quote = quote;
+  }
+
+  public static void main(final String[] args) {
+    final CustomDumpRequest request = new CustomDumpRequest();
+    request.columns = new String[] {"PID", "ICD9", "CPT"};
+    request.header = new String[] {"Patient Id", "ICD9 code", "CPT code"};
+    request.patientIds = new long[] {111};
+    System.out.println(new Gson().toJson(request));
+  }
+
+  public boolean isCompressFile() {
+    return compressFile;
   }
 }

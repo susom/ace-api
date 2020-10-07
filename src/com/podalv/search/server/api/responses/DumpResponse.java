@@ -3,14 +3,16 @@ package com.podalv.search.server.api.responses;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.podalv.search.server.api.requests.RequestCompression;
 
 /** Complete patient's record
  *
  * @author podalv
  *
  */
-public class DumpResponse {
+public class DumpResponse implements RequestCompression {
 
   @JsonProperty("patientId") private final long                    patientId;
   @JsonProperty("recordStart") private int                         recordStart;
@@ -41,6 +43,7 @@ public class DumpResponse {
   @JsonProperty("selectionQuery") private String                   selectionQuery = null;
   @JsonProperty("containsStart") private boolean                   containsStart  = false;
   @JsonProperty("containsEnd") private boolean                     containsEnd    = false;
+  @JsonIgnore private transient boolean                            compression    = false;
 
   public static DumpResponse createError(final String error) {
     final DumpResponse result = new DumpResponse(-1);
@@ -280,4 +283,12 @@ public class DumpResponse {
     return error;
   }
 
+  public void setCompression(final boolean compression) {
+    this.compression = compression;
+  }
+
+  @Override
+  public boolean compressResponse() {
+    return compression;
+  }
 }

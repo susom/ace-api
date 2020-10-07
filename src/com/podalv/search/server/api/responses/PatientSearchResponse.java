@@ -2,23 +2,27 @@ package com.podalv.search.server.api.responses;
 
 import java.util.LinkedList;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.podalv.search.server.api.requests.RequestCompression;
+
 /** Encapsulates the search result
  *
  * @author podalv
  *
  */
-public class PatientSearchResponse {
+public class PatientSearchResponse implements RequestCompression {
 
-  private final LinkedList<double[]> patientIds        = new LinkedList<double[]>();
-  private String                     originalUnparsedQuery;
-  private long                       timeTook;
-  private String                     parsedQuery;
-  private String                     exportLocation;
-  private int                        cohortPatientCnt  = 0;
-  private int                        generalPatientCnt = 0;
-  private int                        processedPatients = 0;
-  String                             errorMessage      = null;
-  private final String[]             warningMessage    = null;
+  private final LinkedList<double[]>    patientIds        = new LinkedList<>();
+  private String                        originalUnparsedQuery;
+  private long                          timeTook;
+  private String                        parsedQuery;
+  private String                        exportLocation;
+  private int                           cohortPatientCnt  = 0;
+  private int                           generalPatientCnt = 0;
+  private int                           processedPatients = 0;
+  String                                errorMessage      = null;
+  private final String[]                warningMessage    = null;
+  @JsonIgnore private transient boolean compression       = false;
 
   public void setOriginalUnparsedQuery(final String originalUnparsedQuery) {
     this.originalUnparsedQuery = originalUnparsedQuery;
@@ -59,7 +63,7 @@ public class PatientSearchResponse {
   }
 
   public void setError(final String error) {
-    this.errorMessage = error;
+    errorMessage = error;
   }
 
   public String getErrorMessage() {
@@ -83,11 +87,11 @@ public class PatientSearchResponse {
   }
 
   public void setTimeTook(final long time) {
-    this.timeTook = time;
+    timeTook = time;
   }
 
   public void setProcessedPatients(final int patientCnt) {
-    this.processedPatients = patientCnt;
+    processedPatients = patientCnt;
   }
 
   public LinkedList<double[]> getPatientIds() {
@@ -102,4 +106,12 @@ public class PatientSearchResponse {
     return errorMessage != null && !errorMessage.isEmpty();
   }
 
+  public void setCompression(final boolean compression) {
+    this.compression = compression;
+  }
+
+  @Override
+  public boolean compressResponse() {
+    return compression;
+  }
 }

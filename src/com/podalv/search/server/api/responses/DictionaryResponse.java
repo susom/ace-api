@@ -2,9 +2,11 @@ package com.podalv.search.server.api.responses;
 
 import java.util.HashMap;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.podalv.search.server.api.requests.RequestCompression;
 
-public class DictionaryResponse {
+public class DictionaryResponse implements RequestCompression {
 
   @JsonProperty("cpt") private HashMap<String, String>    cpt;
   @JsonProperty("icd9") private HashMap<String, String>   icd9;
@@ -13,6 +15,11 @@ public class DictionaryResponse {
   @JsonProperty("labs") private HashMap<String, String>   labs;
   @JsonProperty("vitals") private HashMap<String, String> vitals;
   @JsonProperty("rxNorm") private HashMap<String, String> rxNorm;
+  @JsonIgnore private transient boolean                   compression = false;
+
+  public void setCompression(final boolean compression) {
+    this.compression = compression;
+  }
 
   public void setAtc(final HashMap<String, String> atc) {
     this.atc = atc;
@@ -68,5 +75,10 @@ public class DictionaryResponse {
 
   public HashMap<String, String> getVitals() {
     return vitals;
+  }
+
+  @Override
+  public boolean compressResponse() {
+    return compression;
   }
 }
