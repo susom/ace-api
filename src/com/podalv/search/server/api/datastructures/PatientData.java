@@ -3,6 +3,8 @@ package com.podalv.search.server.api.datastructures;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import com.google.gson.Gson;
@@ -27,13 +29,13 @@ public class PatientData {
   }
 
   /** From a dump file response creates PatientData object
-  *
-  * @return
-  * @throws QueryException if the patient did not exist or the response did not return any data
+   *
+   * @return
+   * @throws QueryException if the patient did not exist or the response did not return any data
    * @throws FileNotFoundException
    * @throws JsonIOException
    * @throws JsonSyntaxException
-  */
+   */
   public static PatientData create(final File jsonDumpResponse) throws QueryException, JsonSyntaxException, JsonIOException, FileNotFoundException {
     final DumpResponse response = new Gson().fromJson(new FileReader(jsonDumpResponse), DumpResponse.class);
     if (response == null || response.getError() != null) {
@@ -53,6 +55,14 @@ public class PatientData {
       throw new QueryException(response == null ? "Patient dump request did not return any data" : "Patient dump request returned error '" + response.getError() + "'");
     }
     return new PatientData(response);
+  }
+
+  public LocalDateTime getDob() {
+    try {
+      return LocalDateTime.parse(data.getDob());
+    } catch (final Exception e) {
+      return null;
+    }
   }
 
   /** Returns time intervals with additional data about icd9 codes for the specified icd9 code
@@ -89,7 +99,7 @@ public class PatientData {
     return result;
   }
 
-  private HashSet<TimeInterval> addAll(final TimeInterval ... intervals) {
+  private HashSet<TimeInterval> addAll(final TimeInterval... intervals) {
     final HashSet<TimeInterval> input = new HashSet<>();
     for (final TimeInterval t : intervals) {
       input.add(t);
@@ -102,7 +112,7 @@ public class PatientData {
    * @param intervals
    * @return
    */
-  public HashMap<String, ArrayList<TimeIntervalIcd9>> getIcd9InIntervals(final TimeInterval ... intervals) {
+  public HashMap<String, ArrayList<TimeIntervalIcd9>> getIcd9InIntervals(final TimeInterval... intervals) {
     final HashSet<TimeInterval> input = addAll(intervals);
     final HashMap<String, ArrayList<TimeIntervalIcd9>> result = new HashMap<>();
     final Iterator<String> i = getUniqueIcd9Codes().iterator();
@@ -126,11 +136,11 @@ public class PatientData {
   }
 
   /** Given a list of time intervals returns all CPT codes that are found in these intervals
-  *
-  * @param intervals
-  * @return
-  */
-  public HashMap<String, ArrayList<TimeInterval>> getCptInIntervals(final TimeInterval ... intervals) {
+   *
+   * @param intervals
+   * @return
+   */
+  public HashMap<String, ArrayList<TimeInterval>> getCptInIntervals(final TimeInterval... intervals) {
     final HashSet<TimeInterval> input = addAll(intervals);
     final HashMap<String, ArrayList<TimeInterval>> result = new HashMap<>();
     final Iterator<String> i = getUniqueCptCodes().iterator();
@@ -154,11 +164,11 @@ public class PatientData {
   }
 
   /** Given a list of time intervals returns all RxNorm codes that are found in these intervals
-  *
-  * @param intervals
-  * @return
-  */
-  public HashMap<String, ArrayList<TimeInterval>> getRxInIntervals(final TimeInterval ... intervals) {
+   *
+   * @param intervals
+   * @return
+   */
+  public HashMap<String, ArrayList<TimeInterval>> getRxInIntervals(final TimeInterval... intervals) {
     final HashSet<TimeInterval> input = addAll(intervals);
     final HashMap<String, ArrayList<TimeInterval>> result = new HashMap<>();
     final Iterator<String> i = getUniqueRxNormCodes().iterator();
@@ -182,11 +192,11 @@ public class PatientData {
   }
 
   /** Given a list of time intervals returns all Vitals codes that are found in these intervals
-  *
-  * @param intervals
-  * @return
-  */
-  public HashMap<String, ArrayList<TimeInterval>> getVitalsInIntervals(final TimeInterval ... intervals) {
+   *
+   * @param intervals
+   * @return
+   */
+  public HashMap<String, ArrayList<TimeInterval>> getVitalsInIntervals(final TimeInterval... intervals) {
     final HashSet<TimeInterval> input = addAll(intervals);
     final HashMap<String, ArrayList<TimeInterval>> result = new HashMap<>();
     final Iterator<String> i = getUniqueVitalsCodes().iterator();
@@ -210,11 +220,11 @@ public class PatientData {
   }
 
   /** Given a list of time intervals returns all Snomed codes that are found in these intervals
-  *
-  * @param intervals
-  * @return
-  */
-  public HashMap<String, ArrayList<TimeInterval>> getSnomedInIntervals(final TimeInterval ... intervals) {
+   *
+   * @param intervals
+   * @return
+   */
+  public HashMap<String, ArrayList<TimeInterval>> getSnomedInIntervals(final TimeInterval... intervals) {
     final HashSet<TimeInterval> input = addAll(intervals);
     final HashMap<String, ArrayList<TimeInterval>> result = new HashMap<>();
     final Iterator<String> i = getUniqueSnomedCodes().iterator();
@@ -238,11 +248,11 @@ public class PatientData {
   }
 
   /** Given a list of time intervals returns all ATC codes that are found in these intervals
-  *
-  * @param intervals
-  * @return
-  */
-  public HashMap<String, ArrayList<TimeInterval>> getAtcInIntervals(final TimeInterval ... intervals) {
+   *
+   * @param intervals
+   * @return
+   */
+  public HashMap<String, ArrayList<TimeInterval>> getAtcInIntervals(final TimeInterval... intervals) {
     final HashSet<TimeInterval> input = addAll(intervals);
     final HashMap<String, ArrayList<TimeInterval>> result = new HashMap<>();
     final Iterator<String> i = getUniqueAtcCodes().iterator();
@@ -270,11 +280,11 @@ public class PatientData {
   }
 
   /** Given a list of time intervals returns all Labs codes that are found in these intervals
-  *
-  * @param intervals
-  * @return
-  */
-  public HashMap<String, ArrayList<TimeInterval>> getLabsInIntervals(final TimeInterval ... intervals) {
+   *
+   * @param intervals
+   * @return
+   */
+  public HashMap<String, ArrayList<TimeInterval>> getLabsInIntervals(final TimeInterval... intervals) {
     final HashSet<TimeInterval> input = addAll(intervals);
     final HashMap<String, ArrayList<TimeInterval>> result = new HashMap<>();
     final Iterator<String> i = getUniqueLabCodes().iterator();
@@ -399,10 +409,10 @@ public class PatientData {
   }
 
   /** For the specified term returns time point, note id and note type where there was a negated mention of the term
-  *
-  * @param term
-  * @return
-  */
+   *
+   * @param term
+   * @return
+   */
   public ArrayList<TimeIntervalTerm> getNegatedTermTimeIntervals(final String term) {
     final ArrayList<TimeIntervalTerm> result = new ArrayList<>();
     final List<String> list = data.getNegatedTerms().get(term);
@@ -417,10 +427,10 @@ public class PatientData {
   }
 
   /** For the specified term returns time point, note id and note type where there was a family history mention of the term
-  *
-  * @param term
-  * @return
-  */
+   *
+   * @param term
+   * @return
+   */
   public ArrayList<TimeIntervalTerm> getFamilyHistoryTermTimeIntervals(final String term) {
     final ArrayList<TimeIntervalTerm> result = new ArrayList<>();
     final List<String> list = data.getFhTerms().get(term);
