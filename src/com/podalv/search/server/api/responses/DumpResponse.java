@@ -1,49 +1,81 @@
 package com.podalv.search.server.api.responses;
 
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.podalv.search.server.api.requests.RequestCompression;
 
-/** Complete patient's record
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Complete patient's record
  *
  * @author podalv
- *
  */
 public class DumpResponse implements RequestCompression {
 
-  @JsonProperty("patientId") private final long                    patientId;
-  @JsonProperty("recordStart") private int                         recordStart;
-  @JsonProperty("recordEnd") private int                           recordEnd;
-  @JsonProperty("death") private int                               death;
-  @JsonProperty("gender") private String                           gender;
-  @JsonProperty("race") private String                             race;
-  @JsonProperty("ethnicity") private String                        ethnicity;
-  @JsonProperty("icd9") private Map<String, List<String>>          icd9           = null;
-  @JsonProperty("icd10") private Map<String, List<String>>         icd10          = null;
-  @JsonProperty("cpt") private Map<String, List<Integer>>          cpt            = null;
-  @JsonProperty("rx") private Map<String, List<String>>            rx             = null;
-  @JsonProperty("snomed") private Map<String, List<Integer>>       snomed         = null;
-  @JsonProperty("negatedTerms") private Map<String, List<String>>  negatedTerms   = null;
-  @JsonProperty("fhTerms") private Map<String, List<String>>       fhTerms        = null;
-  @JsonProperty("positiveTerms") private Map<String, List<String>> positiveTerms  = null;
-  @JsonProperty("visitTypes") private Map<String, List<Integer>>   visitTypes     = null;
-  @JsonProperty("departments") private Map<String, List<Integer>>  departments    = null;
-  @JsonProperty("noteTypes") private Map<String, List<Integer>>    noteTypes      = null;
-  @JsonProperty("atc") private Map<String, List<Integer>>          atc            = null;
-  @JsonProperty("labs") private Map<String, List<String>>          labs           = null;
-  @JsonProperty("labsRaw") private Map<String, List<String>>       labsRaw        = null;
-  @JsonProperty("vitals") private Map<String, List<String>>        vitals         = null;
-  @JsonProperty("encounterDays") private List<Integer>             encounterDays  = null;
-  @JsonProperty("ageRanges") private List<Integer>                 ageRanges      = null;
-  @JsonProperty("yearRanges") private Map<Integer, List<Integer>>  yearRanges     = null;
-  @JsonProperty("error") private String                            error          = null;
-  @JsonProperty("selectionQuery") private String                   selectionQuery = null;
-  @JsonProperty("containsStart") private boolean                   containsStart  = false;
-  @JsonProperty("containsEnd") private boolean                     containsEnd    = false;
-  @JsonIgnore private transient boolean                            compression    = false;
+  @JsonProperty("patientId")
+  private final     long                        patientId;
+  @JsonProperty("recordStart")
+  private           int                         recordStart;
+  @JsonProperty("recordEnd")
+  private           int                         recordEnd;
+  @JsonProperty("death")
+  private           int                         death;
+  @JsonProperty("gender")
+  private           String                      gender;
+  @JsonProperty("race")
+  private           String                      race;
+  @JsonProperty("ethnicity")
+  private           String                      ethnicity;
+  @JsonProperty("icd9")
+  private           Map<String, List<String>>   icd9           = null;
+  @JsonProperty("icd10")
+  private           Map<String, List<String>>   icd10          = null;
+  @JsonProperty("cpt")
+  private           Map<String, List<Integer>>  cpt            = null;
+  @JsonProperty("rx")
+  private           Map<String, List<String>>   rx             = null;
+  @JsonProperty("snomed")
+  private           Map<String, List<Integer>>  snomed         = null;
+  @JsonProperty("negatedTerms")
+  private           Map<String, List<String>>   negatedTerms   = null;
+  @JsonProperty("fhTerms")
+  private           Map<String, List<String>>   fhTerms        = null;
+  @JsonProperty("positiveTerms")
+  private           Map<String, List<String>>   positiveTerms  = null;
+  @JsonProperty("visitTypes")
+  private           Map<String, List<Integer>>  visitTypes     = null;
+  @JsonProperty("departments")
+  private           Map<String, List<Integer>>  departments    = null;
+  @JsonProperty("noteTypes")
+  private           Map<String, List<Integer>>  noteTypes      = null;
+  @JsonProperty("atc")
+  private           Map<String, List<Integer>>  atc            = null;
+  @JsonProperty("labs")
+  private           Map<String, List<String>>   labs           = null;
+  @JsonProperty("labsRaw")
+  private           Map<String, List<String>>   labsRaw        = null;
+  @JsonProperty("vitals")
+  private           Map<String, List<String>>   vitals         = null;
+  @JsonProperty("encounterDays")
+  private           List<Integer>               encounterDays  = null;
+  @JsonProperty("ageRanges")
+  private           List<Integer>               ageRanges      = null;
+  @JsonProperty("yearRanges")
+  private           Map<Integer, List<Integer>> yearRanges     = null;
+  @JsonProperty("error")
+  private           String                      error          = null;
+  @JsonProperty("selectionQuery")
+  private           String                      selectionQuery = null;
+  @JsonProperty("containsStart")
+  private           boolean                     containsStart  = false;
+  @JsonProperty("containsEnd")
+  private           boolean                     containsEnd    = false;
+  @JsonProperty("dob")
+  private           String                      dob            = null;
+  @JsonIgnore
+  private transient boolean                     compression    = false;
 
   public static DumpResponse createError(final String error) {
     final DumpResponse result = new DumpResponse(-1);
@@ -56,19 +88,23 @@ public class DumpResponse implements RequestCompression {
   }
 
   public void setLabsRaw(final Map<String, List<String>> labs) {
-    labsRaw = labs;
+    this.labsRaw = labs;
   }
 
   public String getSelectionQuery() {
-    return selectionQuery;
+    return this.selectionQuery;
+  }
+
+  public void setDob(final String dob) {
+    this.dob = dob;
   }
 
   public boolean isContainsEnd() {
-    return containsEnd;
+    return this.containsEnd;
   }
 
   public boolean isContainsStart() {
-    return containsStart;
+    return this.containsStart;
   }
 
   public void setSelectionQuery(final String selectionQuery) {
@@ -84,7 +120,7 @@ public class DumpResponse implements RequestCompression {
   }
 
   public Map<String, List<String>> getLabsRaw() {
-    return labsRaw;
+    return this.labsRaw;
   }
 
   public void setDepartments(final Map<String, List<Integer>> departments) {
@@ -100,11 +136,11 @@ public class DumpResponse implements RequestCompression {
   }
 
   public Map<Integer, List<Integer>> getYearRanges() {
-    return yearRanges;
+    return this.yearRanges;
   }
 
   public List<Integer> getAgeRanges() {
-    return ageRanges;
+    return this.ageRanges;
   }
 
   public void setDeath(final int death) {
@@ -112,7 +148,7 @@ public class DumpResponse implements RequestCompression {
   }
 
   public int getDeath() {
-    return death;
+    return this.death;
   }
 
   public void setEthnicity(final String ethnicity) {
@@ -124,7 +160,7 @@ public class DumpResponse implements RequestCompression {
   }
 
   public Map<String, List<Integer>> getNoteTypes() {
-    return noteTypes;
+    return this.noteTypes;
   }
 
   public void setGender(final String gender) {
@@ -136,15 +172,15 @@ public class DumpResponse implements RequestCompression {
   }
 
   public String getEthnicity() {
-    return ethnicity;
+    return this.ethnicity;
   }
 
   public String getGender() {
-    return gender;
+    return this.gender;
   }
 
   public String getRace() {
-    return race;
+    return this.race;
   }
 
   public void setLabs(final Map<String, List<String>> labs) {
@@ -156,11 +192,11 @@ public class DumpResponse implements RequestCompression {
   }
 
   public Map<String, List<Integer>> getAtc() {
-    return atc;
+    return this.atc;
   }
 
   public Map<String, List<String>> getLabs() {
-    return labs;
+    return this.labs;
   }
 
   public void setAgeRanges(final List<Integer> ageRanges) {
@@ -176,7 +212,7 @@ public class DumpResponse implements RequestCompression {
   }
 
   public Map<String, List<String>> getVitals() {
-    return vitals;
+    return this.vitals;
   }
 
   public void setEncounterDays(final List<Integer> encounterDays) {
@@ -184,7 +220,7 @@ public class DumpResponse implements RequestCompression {
   }
 
   public List<Integer> getEncounterDays() {
-    return encounterDays;
+    return this.encounterDays;
   }
 
   public void setFhTerms(final Map<String, List<String>> fhTerms) {
@@ -192,7 +228,7 @@ public class DumpResponse implements RequestCompression {
   }
 
   public Map<String, List<Integer>> getVisitTypes() {
-    return visitTypes;
+    return this.visitTypes;
   }
 
   public void setVisitTypes(final Map<String, List<Integer>> visitTypes) {
@@ -208,23 +244,23 @@ public class DumpResponse implements RequestCompression {
   }
 
   public Map<String, List<String>> getFhTerms() {
-    return fhTerms;
+    return this.fhTerms;
   }
 
   public Map<String, List<Integer>> getDepartments() {
-    return departments;
+    return this.departments;
   }
 
   public Map<String, List<String>> getIcd10() {
-    return icd10;
+    return this.icd10;
   }
 
   public Map<String, List<String>> getNegatedTerms() {
-    return negatedTerms;
+    return this.negatedTerms;
   }
 
   public Map<String, List<String>> getPositiveTerms() {
-    return positiveTerms;
+    return this.positiveTerms;
   }
 
   public void setRecordStart(final int recordStart) {
@@ -232,11 +268,11 @@ public class DumpResponse implements RequestCompression {
   }
 
   public int getRecordEnd() {
-    return recordEnd;
+    return this.recordEnd;
   }
 
   public int getRecordStart() {
-    return recordStart;
+    return this.recordStart;
   }
 
   public void setError(final String error) {
@@ -252,7 +288,7 @@ public class DumpResponse implements RequestCompression {
   }
 
   public Map<String, List<Integer>> getSnomed() {
-    return snomed;
+    return this.snomed;
   }
 
   public void setRx(final Map<String, List<String>> rx) {
@@ -260,7 +296,7 @@ public class DumpResponse implements RequestCompression {
   }
 
   public Map<String, List<String>> getRx() {
-    return rx;
+    return this.rx;
   }
 
   public void setCpt(final Map<String, List<Integer>> cpt) {
@@ -268,19 +304,19 @@ public class DumpResponse implements RequestCompression {
   }
 
   public Map<String, List<String>> getIcd9() {
-    return icd9;
+    return this.icd9;
   }
 
   public Map<String, List<Integer>> getCpt() {
-    return cpt;
+    return this.cpt;
   }
 
   public long getPatientId() {
-    return patientId;
+    return this.patientId;
   }
 
   public String getError() {
-    return error;
+    return this.error;
   }
 
   public void setCompression(final boolean compression) {
@@ -289,6 +325,6 @@ public class DumpResponse implements RequestCompression {
 
   @Override
   public boolean compressResponse() {
-    return compression;
+    return this.compression;
   }
 }
