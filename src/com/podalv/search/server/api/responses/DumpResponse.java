@@ -99,6 +99,10 @@ public class DumpResponse implements RequestCompression {
     this.dob = dob;
   }
 
+  public String getDob() {
+    return this.dob;
+  }
+
   public boolean isContainsEnd() {
     return this.containsEnd;
   }
