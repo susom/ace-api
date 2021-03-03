@@ -5,7 +5,7 @@
 
   <mirrors>
     <mirror>
-      <mirrorOf>*,!io.cloudrepo.rit-public-snapshot,!io.cloudrepo.rit-ext-private</mirrorOf>
+      <mirrorOf>*,!io.cloudrepo.rit-public-snapshot,!io.cloudrepo.rit-public,!io.cloudrepo.rit-ext-private</mirrorOf>
       <url>https://repo.maven.apache.org/maven2/</url>
     </mirror>
   </mirrors>
@@ -47,6 +47,11 @@
   <servers>
     <server>
       <id>io.cloudrepo.rit-public-snapshot</id>
+      <username>${env.REPO_USERNAME}</username>
+      <password>${env.REPO_API_TOKEN}</password>
+    </server>
+    <server>
+      <id>io.cloudrepo.rit-public</id>
       <username>${env.REPO_USERNAME}</username>
       <password>${env.REPO_API_TOKEN}</password>
     </server>
