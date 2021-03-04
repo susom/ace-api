@@ -247,7 +247,7 @@ public class PatientData {
     return result;
   }
 
-  /** Given a list of time intervals returns all ATC codes that are found in these intervals
+  /** Given a list of time intervals returns all RxNorm codes that are found in these intervals
    *
    * @param intervals
    * @return
@@ -258,20 +258,16 @@ public class PatientData {
     final Iterator<String> i = getUniqueAtcCodes().iterator();
     while (i.hasNext()) {
       final String atc = i.next();
-      final Iterator<Integer> rxNorms = getAtcRxNorms(atc).iterator();
-      while (rxNorms.hasNext()) {
-        final Integer rxnorm = rxNorms.next();
-        final Iterator<TimeIntervalRxNorm> iterator = getRxNormTimeIntervals(String.valueOf(rxnorm)).iterator();
-        while (iterator.hasNext()) {
-          final TimeInterval it = iterator.next();
-          if (input.contains(it)) {
-            ArrayList<TimeInterval> list = result.get(atc);
-            if (list == null) {
-              list = new ArrayList<>();
-              result.put(atc, list);
-            }
-            list.add(it);
+      final Iterator<TimeIntervalRxNorm> iterator = getAtcTimeIntervals(atc).iterator();
+      while (iterator.hasNext()) {
+        final TimeInterval it = iterator.next();
+        if (input.contains(it)) {
+          ArrayList<TimeInterval> list = result.get(atc);
+          if (list == null) {
+            list = new ArrayList<>();
+            result.put(atc, list);
           }
+          list.add(it);
         }
       }
     }
@@ -461,6 +457,23 @@ public class PatientData {
     return result;
   }
 
+  /** For the specified ATC returns time interval, drug status and drug route
+   *
+   * @param atc
+   * @return
+   */
+  public ArrayList<TimeIntervalRxNorm> getAtcTimeIntervals(final String atc) {
+    final ArrayList<TimeIntervalRxNorm> result = new ArrayList<>();
+    final List<String> list = data.getAtc().get(atc);
+    if (list != null) {
+      for (int x = 0; x < list.size(); x += 4) {
+        result.add(new TimeIntervalRxNorm(minutesToDays(Integer.parseInt(list.get(x))), minutesToDays(Integer.parseInt(list.get(x + 1))), list.get(x + 2), list.get(x + 3)));
+      }
+    }
+    Collections.sort(result);
+    return result;
+  }
+
   /** For CPT code returns all time intervals when the CPT was indicated
    *
    * @param cpt
@@ -492,22 +505,6 @@ public class PatientData {
       }
     }
     Collections.sort(result);
-    return result;
-  }
-
-  /** Returns a list of RxNorms assigned to the specified ATC code
-   *
-   * @param atc
-   * @return
-   */
-  public HashSet<Integer> getAtcRxNorms(final String atc) {
-    final HashSet<Integer> result = new HashSet<>();
-    final List<Integer> list = data.getAtc().get(atc);
-    if (list != null) {
-      for (int x = 0; x < list.size(); x++) {
-        result.add(list.get(x));
-      }
-    }
     return result;
   }
 
