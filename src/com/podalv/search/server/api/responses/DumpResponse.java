@@ -51,7 +51,7 @@ public class DumpResponse implements RequestCompression {
   @JsonProperty("noteTypes")
   private           Map<String, List<Integer>>  noteTypes      = null;
   @JsonProperty("atc")
-  private           Map<String, List<Integer>>  atc            = null;
+  private           Map<String, List<String>>   atc            = null;
   @JsonProperty("labs")
   private           Map<String, List<String>>   labs           = null;
   @JsonProperty("labsRaw")
@@ -191,11 +191,11 @@ public class DumpResponse implements RequestCompression {
     this.labs = labs;
   }
 
-  public void setAtc(final Map<String, List<Integer>> atc) {
+  public void setAtc(final Map<String, List<String>> atc) {
     this.atc = atc;
   }
 
-  public Map<String, List<Integer>> getAtc() {
+  public Map<String, List<String>> getAtc() {
     return this.atc;
   }
 
