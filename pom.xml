@@ -39,6 +39,16 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
             <url>https://repo.maven.apache.org/maven2</url>
         </pluginRepository>
     </pluginRepositories>
+    <distributionManagement>
+      <snapshotRepository>
+        <id>io.cloudrepo.rit-public-snapshot</id>
+        <url>https://susom.mycloudrepo.io/repositories/rit-public-snapshot</url>
+      </snapshotRepository>
+      <repository>
+        <id>io.cloudrepo.rit-public</id>
+        <url>https://susom.mycloudrepo.io/repositories/rit-public</url>
+      </repository>
+    </distributionManagement>
     <build>
         <sourceDirectory>src</sourceDirectory>
         <outputDirectory>target/classes</outputDirectory>
