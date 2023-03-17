@@ -41,12 +41,12 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     </pluginRepositories>
     <distributionManagement>
       <snapshotRepository>
-        <id>io.cloudrepo.rit-public-snapshot</id>
-        <url>https://susom.mycloudrepo.io/repositories/rit-public-snapshot</url>
+        <id>artifact-registry</id>
+        <url>artifactregistry://us-west1-maven.pkg.dev/som-rit-infrastructure-dev/ace-maven-snapshot</url>
       </snapshotRepository>
       <repository>
-        <id>io.cloudrepo.rit-public</id>
-        <url>https://susom.mycloudrepo.io/repositories/rit-public</url>
+        <id>artifact-registry</id>
+        <url>artifactregistry://us-west1-maven.pkg.dev/som-rit-infrastructure-dev/ace-maven</url>
       </repository>
     </distributionManagement>
     <build>
@@ -226,6 +226,13 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
                 </executions>
             </plugin>
         </plugins>
+        <extensions>
+            <extension>
+                <groupId>com.google.cloud.artifactregistry</groupId>
+                <artifactId>artifactregistry-maven-wagon</artifactId>
+                <version>2.1.0</version>
+            </extension>
+        </extensions>
     </build>
     <reporting>
         <outputDirectory>target/site</outputDirectory>
