@@ -15,7 +15,10 @@
       <repositories>
         <repository>
           <id>artifact-registry</id>
-          <url>http://us-west1-maven.pkg.dev/som-rit-infrastructure-dev/ace-maven</url>
+          <url>https://us-west1-maven.pkg.dev/som-rit-infrastructure-prod/ace-maven</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
           <snapshots>
             <enabled>false</enabled>
           </snapshots>
