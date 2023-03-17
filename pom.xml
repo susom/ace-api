@@ -42,11 +42,11 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <distributionManagement>
       <snapshotRepository>
         <id>artifact-registry</id>
-        <url>artifactregistry://us-west1-maven.pkg.dev/som-rit-infrastructure-dev/ace-maven-snapshot</url>
+        <url>https://us-west1-maven.pkg.dev/som-rit-infrastructure-dev/ace-maven-snapshot</url>
       </snapshotRepository>
       <repository>
         <id>artifact-registry</id>
-        <url>artifactregistry://us-west1-maven.pkg.dev/som-rit-infrastructure-dev/ace-maven</url>
+        <url>https://us-west1-maven.pkg.dev/som-rit-infrastructure-dev/ace-maven</url>
       </repository>
     </distributionManagement>
     <build>
