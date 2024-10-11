@@ -1,0 +1,92 @@
+name: ace-api
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven
+
+      - name: Setup Maven settings
+        run: |
+          mkdir -p ~/.m2
+          cp ./travis/actions-maven-settings.xml ~/.m2/settings.xml
+          sed -i "s/-SNAPSHOT/-github-build-${{ github.run_number }}/" pom.xml
+
+      - name: Run tests
+        run: mvn -e verify
+
+      - name: Display Surefire reports on failure
+        if: failure()
+        run: |
+          for F in target/surefire-reports/*.txt; do echo $F; cat $F; echo; done
+
+  deploy-snapshots:
+    name: Deploy Snapshots
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+   
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven
+
+      - name: Setup Maven settings
+        run: |
+          mkdir -p ~/.m2
+          cp ./travis/actions-maven-settings.xml ~/.m2/settings.xml
+          sed -i "s/-SNAPSHOT/-github-build-${{ github.run_number }}/" pom.xml
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          project_id: 'som-rit-infrastructure-prod'
+          workload_identity_provider: 'projects/294515190965/locations/global/workloadIdentityPools/github/providers/susom-github'
+          create_credentials_file: true
+          export_environment_variables: true
+          cleanup_credentials: true
+
+      - name: Set up OAuth2 access token for Maven
+        run: |
+          echo "ACCESS_TOKEN=$(gcloud auth print-access-token)" >> $GITHUB_ENV
+
+      - name: Deploy Snapshots
+        run: mvn --batch-mode -e -DskipTests=true deploy -s ~/.m2/settings.xml
